@@ -1,6 +1,4 @@
-import React from 'react'
-
-const kanban = () => {
+const Kanban = () => {
   return (
     <div>
       this is the kanban component.
@@ -8,4 +6,5 @@ const kanban = () => {
   )
 }
 
-export default kanban
+export default Kanban
+

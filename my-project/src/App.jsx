@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Dashboard from './Components/dashboard'
 import Signin from './Components/signin'
@@ -7,29 +6,34 @@ import Header from './Components/header'
 import Footer from './Components/footer'
 import Project from './Components/projects'
 import Status from './Components/status'
+import Navbar from './Components/navbar'
 
 function App() {
 
   let router = createBrowserRouter([
     {
+      path: "/",
+      element: <><Header /><Signin /><Footer /></>
+    },
+    {
       path: "/login",
-      element: <Signin />
+      element: <><Header /><Signin /><Footer /></>
     },
     {
       path: "/register",
-      element: <Signup />
+      element: <><Header /><Signup /><Footer /></>
     },
     {
-      path: "/",
-      element: <><Header /><Dashboard /><Footer /></>
+      path: "/dashboard",
+      element: <><Navbar /><Dashboard /><Footer /></>
     },
     {
       path: "/projects",
-      element: <><Header /><Project /><Footer /></>
+      element: <><Navbar /><Project /><Footer /></>
     },
     {
       path: "/status",
-      element: <><Header /><Status /><Footer /></>
+      element: <><Navbar /><Status /><Footer /></>
     },
     {
       path: "/project",
@@ -47,3 +51,4 @@ function App() {
 }
 
 export default App
+

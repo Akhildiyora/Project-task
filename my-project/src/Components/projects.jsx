@@ -1,6 +1,4 @@
-import React from 'react'
-
-const projects = () => {
+const Projects = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">Projects</h1>
@@ -9,4 +7,5 @@ const projects = () => {
   )
 }
 
-export default projects
+export default Projects
+

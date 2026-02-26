@@ -1,6 +1,4 @@
-import React from 'react'
-
-const create = () => {
+const Create = () => {
   return (
     <div>
       <h2>Create project here</h2>
@@ -8,4 +6,5 @@ const create = () => {
   )
 }
 
-export default create
+export default Create
+

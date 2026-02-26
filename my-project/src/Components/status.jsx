@@ -1,6 +1,4 @@
-import React from 'react'
-
-const status = () => {
+const Status = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">Status</h1>
@@ -9,4 +7,5 @@ const status = () => {
   )
 }
 
-export default status
+export default Status
+
