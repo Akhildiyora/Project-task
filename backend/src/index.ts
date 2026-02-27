@@ -153,7 +153,7 @@ app.post("/google-login", async (c) => {
 
   setCookie(c, "token", appToken, {
     httpOnly: true,
-    secure: true,
+    secure: false, // Set to false for local development
     sameSite: "strict",
     maxAge: 3600,
     path: "/",
@@ -161,6 +161,7 @@ app.post("/google-login", async (c) => {
   
   return c.json({
     message: "Google authentication successful",
+    token: appToken
   });
 
 } catch (error) {
@@ -170,7 +171,15 @@ app.post("/google-login", async (c) => {
 });
 
 const authMiddleware = async (c: any, next: any) => {
-  const token = getCookie(c, "token");
+  let token = getCookie(c, "token");
+
+  if (!token) {
+    const authHeader = c.req.header("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.substring(7);
+    }
+  }
+
   if (!token) {
     return c.json({ error: "unauthorized" }, 401);
   }

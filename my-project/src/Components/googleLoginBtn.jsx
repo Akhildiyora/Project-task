@@ -21,6 +21,10 @@ export default function GoogleLoginBtn() {
             return;
         }
 
+        if (data.token) {
+            localStorage.setItem('appToken', data.token);
+        }
+
         navigate('/dashboard');
     }, [navigate]);
 

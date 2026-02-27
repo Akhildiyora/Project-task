@@ -1,12 +1,14 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Dashboard from './Components/dashboard'
+import Dashboard from './Components/Admin/dashboard'
 import Signin from './Components/signin'
 import Signup from './Components/signup'
 import Header from './Components/header'
 import Footer from './Components/footer'
-import Project from './Components/projects'
-import Status from './Components/status'
-import Navbar from './Components/navbar'
+import Project from './Components/Admin/projects'
+import Status from './Components/Admin/status'
+import Navbar from './Components/Admin/navbar'
+import Kanban from './Components/Admin/project/kanban'
+import Create from './Components/Admin/create'
 
 function App() {
 
@@ -28,6 +30,10 @@ function App() {
       element: <><Navbar /><Dashboard /><Footer /></>
     },
     {
+      path: "/projects/create",
+      element: <><Navbar /><Create /><Footer /></>
+    },
+    {
       path: "/projects",
       element: <><Navbar /><Project /><Footer /></>
     },
@@ -36,14 +42,14 @@ function App() {
       element: <><Navbar /><Status /><Footer /></>
     },
     {
-      path: "/project",
-      element: <Project />
+      path: "/project/kanban",
+      element: <><Navbar /><Kanban /><Footer /></>
     }
   ])
 
   return (
     <>
-      <div>
+      <div className='bg-zinc-900 text-white'>
         <RouterProvider router={router} />
       </div>
     </>

@@ -29,6 +29,10 @@ const Signin = () => {
         return;
       }
 
+      if (data.token) {
+        localStorage.setItem('appToken', data.token);
+      }
+
       alert("Login successful!");
       navigate('/dashboard');
     } catch (error) {

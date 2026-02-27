@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 
+
 const Dashboard = () => {
 
   const navigate = useNavigate();
@@ -15,9 +16,10 @@ const Dashboard = () => {
       }
     })
       .then(response => {
-        if (!localStorage.getItem('appToken')) {
+        if (response.status === 401) {
           alert("Please login to access the dashboard!");
           navigate('/login');
+          return;
         }
         if (!response.ok) {
           throw new Error("Failed to fetch dashboard data");
