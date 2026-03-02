@@ -1,9 +1,10 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import GoogleLoginBtn from './googleLoginBtn';
+import { useUserDataContext } from '../Context/UserDataContext';
 
 const Signin = () => {
-
+  const { setUser } = useUserDataContext();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -29,20 +30,19 @@ const Signin = () => {
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem('appToken', data.token);
+      if (data.user) {
+        setUser(data.user);
       }
+      console.log("Login data:", data);
 
-      alert("Login successful!");
       navigate('/dashboard');
     } catch (error) {
       console.error("Error during login:", error);
-      alert("An error occurred during login");
+      alert(error.message);
     }
-    console.log("Email:", e.target.email.value, "Password:", e.target.password.value);
   }
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-900 text-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-100">
       <form className='login-form flex flex-col gap-4 border border-gray-700 p-6 rounded-lg bg-gray-800 min-w-sm' onSubmit={handleLogin}>
         <h2 className="text-xl font-bold">Login</h2>
         <div className="flex flex-col gap-2">

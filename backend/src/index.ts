@@ -55,7 +55,7 @@ app.post("/register", async (c) => {
 
   const hash = await bcrypt.hash(password, 10);
 
-  const { data, error } = await supabase.from("users").insert({ name, email, password: hash });
+  const { data, error } = await supabase.from("users").insert({ name, email, password: hash, role: "user" });
   console.log("INSERT RESULT", data);
   console.log("INSERT ERROR", error);
   if (error) {
@@ -91,7 +91,7 @@ app.post("/login", async (c) => {
     return c.json({ message: "Invalid credentials" }, 401);
   }
   const token = await sign(
-    { sub: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + 3600 },
+    { sub: user.id, email: user.email, role: user.role, exp: Math.floor(Date.now() / 1000) + 7200 },
     jwtSecret,
   );
 
@@ -99,13 +99,14 @@ app.post("/login", async (c) => {
     httpOnly: true,
     secure: false,
     sameSite: "strict",
-    maxAge: 3600,
+    maxAge: 7200,
     path: "/",
   });
 
   return c.json({
     message: "Login successful",
-    token: token
+    token: token,
+    user: user
   });
 });
 
@@ -137,7 +138,7 @@ app.post("/google-login", async (c) => {
   if (!user) {
     const { data: newUser, error: insertError } = await supabase
       .from("users")
-      .insert({ name, email, google_id: googleId })
+      .insert({ name, email, google_id: googleId, role: "user" })
       .select("*")
       .single();
       if (insertError || !newUser) {
@@ -147,21 +148,21 @@ app.post("/google-login", async (c) => {
     user = newUser;
   }
   const appToken = await sign(
-    { sub: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + 3600 },
+    { sub: user.id, email: user.email, role: user.role, exp: Math.floor(Date.now() / 1000) + 7200 },
     jwtSecret,
   );
 
   setCookie(c, "token", appToken, {
     httpOnly: true,
-    secure: false, // Set to false for local development
+    secure: process.env.NODE_ENV === "production", 
     sameSite: "strict",
-    maxAge: 3600,
+    maxAge: 7200,
     path: "/",
   });
   
   return c.json({
     message: "Google authentication successful",
-    token: appToken
+    user: user
   });
 
 } catch (error) {
@@ -192,14 +193,135 @@ const authMiddleware = async (c: any, next: any) => {
   }
 };
 
+const adminMiddleware = async (c: any, next: any) => {
+  const payload = c.get("jwtPayload");
+  if (!payload || payload.role !== "admin") {
+    return c.json({ error: "Forbidden: Admin access required" }, 403);
+  }
+  await next();
+};
+
 app.get("/dashboard", authMiddleware, async (c) => {
   const user = c.get("jwtPayload");
-  return c.json({ message: "Welcome to the dashboard", user });
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.sub)
+    .maybeSingle();
+  if (error || !data) {
+    return c.json({ message: "User not found" }, 404);
+  }
+  return c.json({ message: "Welcome to the dashboard", user: data });
 });
 
 app.get("/logout", async (c) => {
   deleteCookie(c, "token")
   return c.json({ message: "Logged out successfully" });
+});
+
+// Projects API
+app.get("/projects", authMiddleware, async (c) => {
+  const user = c.get("jwtPayload");
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("user_id", user.sub);
+  
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data);
+});
+
+app.get("/projects/:id", authMiddleware, async (c) => {
+  const id = c.req.param("id");
+  const user = c.get("jwtPayload");
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", user.sub)
+    .single();
+  
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data);
+});
+
+app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
+  const user = c.get("jwtPayload");
+  const { name, description, dueDate, members } = await c.req.json();
+  
+  const { data, error } = await supabase
+    .from("projects")
+    .insert({ 
+      project_name: name, 
+      description, 
+      due_date: dueDate, 
+      user_id: user.sub,
+      members: members
+    })
+    .select("*")
+    .single();
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data, 201);
+});
+
+
+app.get("/features", authMiddleware, async (c) => {
+  const user = c.get("jwtPayload");
+  const projectId = c.req.query("projectId");
+  
+  let query = supabase
+    .from("features")
+    .select("*");
+    
+  if (projectId) {
+    query = query.eq("project_id", projectId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data);
+});
+
+app.post("/features", authMiddleware, adminMiddleware, async (c) => {
+  const user = c.get("jwtPayload");
+  const feature = await c.req.json();
+  
+  const { data, error } = await supabase
+    .from("features")
+    .insert({ ...feature })
+    .select("*")
+    .single();
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data, 201);
+});
+
+app.patch("/features/:id", authMiddleware, adminMiddleware, async (c) => {
+  const id = c.req.param("id");
+  const updates = await c.req.json();
+  
+  const { data, error } = await supabase
+    .from("features")
+    .update(updates)
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data);
+});
+
+app.delete("/features/:id", authMiddleware, adminMiddleware, async (c) => {
+  const id = c.req.param("id");
+  const { error } = await supabase
+    .from("features")
+    .delete()
+    .eq("id", id);
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json({ success: true });
 });
 
 serve(

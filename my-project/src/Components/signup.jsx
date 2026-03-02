@@ -1,22 +1,26 @@
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import GoogleLoginBtn from './googleLoginBtn';
 
 const Signup = () => {
 
   const navigate = useNavigate();
+  const [error, setError] = useState(null)
 
-  const handleInputChange = async (e) => {
+  const handleSignup = async (e) => {
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
-    if (!e.target.name.value) {
+    if (!name) {
       alert("Please enter your name");
       return;
     }
-    if (!e.target.email.value.includes('@')) {
+    if (!email.includes('@')) {
       alert("Please enter a valid email address");
       return;
     }
-    if (e.target.password.value.length < 6) {
+    if (password.length < 6) {
       alert("Ensure password is at least 6 characters long");
       return;
     }
@@ -28,36 +32,26 @@ const Signup = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          name: e.target.name.value,
-          email: e.target.email.value,
-          password: e.target.password.value
-        })
+        body: JSON.stringify({ name, email, password })
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        alert(data.message || "Registration failed");
-        return;
-      }
-
       console.log("Registration response:", data);
       alert("User registered successfully");
       navigate('/login');
-    } catch (error) {
-      console.error("Error during registration:", error);
-      alert("An error occurred during registration");
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError(err.message || "Something went wrong. Please try again.");
+      alert(err.message || "An error occurred during registration");
     }
-
-    console.log("Name:", e.target.name.value, "Email:", e.target.email.value, "Password:", e.target.password.value);
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-900 text-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-100">
       <form className='signup-form flex flex-col gap-4 border border-gray-700 p-6 rounded-lg bg-gray-800 min-w-sm' onSubmit={(e) => {
         e.preventDefault();
-        handleInputChange(e);
+        handleSignup(e);
       }}>
         <h2 className="text-xl font-bold">Sign Up</h2>
         <div className="flex flex-col gap-2">

@@ -1,16 +1,21 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom'
 import Dashboard from './Components/Admin/dashboard'
 import Signin from './Components/signin'
 import Signup from './Components/signup'
 import Header from './Components/header'
 import Footer from './Components/footer'
-import Project from './Components/Admin/projects'
+import Projects from './Components/Admin/projects'
+import Project from './Components/Admin/project/project'
 import Status from './Components/Admin/status'
 import Navbar from './Components/Admin/navbar'
 import Kanban from './Components/Admin/project/kanban'
 import Create from './Components/Admin/create'
+import ProtectedRoute from './Components/ProtectedRoute'
+import { UserProvider } from './Context/UserDataContext'
+import { DataProvider } from './Context/DataContext'
 
 function App() {
+
 
   let router = createBrowserRouter([
     {
@@ -27,30 +32,46 @@ function App() {
     },
     {
       path: "/dashboard",
-      element: <><Navbar /><Dashboard /><Footer /></>
+      element: <><ProtectedRoute><Navbar /><Dashboard /><Footer /></ProtectedRoute></>
     },
     {
       path: "/projects/create",
-      element: <><Navbar /><Create /><Footer /></>
+      element: <><ProtectedRoute requiredRole="admin"><Navbar /><Create /><Footer /></ProtectedRoute></>
     },
     {
       path: "/projects",
-      element: <><Navbar /><Project /><Footer /></>
+      element: <><ProtectedRoute><Navbar /><Projects /><Footer /></ProtectedRoute></>
     },
     {
       path: "/status",
-      element: <><Navbar /><Status /><Footer /></>
+      element: <><ProtectedRoute requiredRole="admin"><Navbar /><Status /><Footer /></ProtectedRoute></>
     },
     {
-      path: "/project/kanban",
-      element: <><Navbar /><Kanban /><Footer /></>
+      path: "/projects/:id",
+      element: <><ProtectedRoute><Navbar /><Project /><Footer /></ProtectedRoute></>
+    },
+    {
+      path: "/projects/:id/features",
+      element: <><ProtectedRoute><Navbar /><Kanban /><Footer /></ProtectedRoute></>
+    },
+    {
+      path: "*",
+      element: <div className="h-screen bg-zinc-900 flex items-center justify-center text-white flex-col">
+        <h1 className="text-4xl font-bold">404</h1>
+        <p>Page Not Found</p>
+        <Link to="/" className="text-blue-400 mt-4 underline">Go Home</Link>
+      </div>
     }
   ])
 
   return (
     <>
       <div className='bg-zinc-900 text-white'>
-        <RouterProvider router={router} />
+        <DataProvider>
+          <UserProvider>
+            <RouterProvider router={router} />
+          </UserProvider>
+        </DataProvider>
       </div>
     </>
   )
