@@ -6,7 +6,7 @@ const Header = () => {
 
 
   return (
-    <div className="bg-gray-800 text-white w-full">
+    <div className="bg-gradient-to-l from-zinc-800 from-70% to-zinc-600 text-white w-full">
       <div className="flex justify-between items-center p-4 max-w-350 mx-auto ">
         <div><AiOutlineProject className="h-10 w-10" /></div>
         <div className="space-x-4">

@@ -42,21 +42,21 @@ const Signin = () => {
     }
   }
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-100">
-      <form className='login-form flex flex-col gap-4 border border-gray-700 p-6 rounded-lg bg-gray-800 min-w-sm' onSubmit={handleLogin}>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-bl from-zinc-900 from-35% via-zinc-600 via-50% to-zinc-900 to-65% text-zinc-100">
+      <form className='login-form flex flex-col gap-4 border border-zinc-700 p-6 rounded-lg bg-zinc-800/40 min-w-sm' onSubmit={handleLogin}>
         <h2 className="text-xl font-bold">Login</h2>
         <div className="flex flex-col gap-2">
           <label htmlFor="email">email ID:</label>
-          <input type="text" id="email" name="email" className="focus:bg-gray-600 bg-gray-700 text-white p-2 rounded border  border-gray-600" required />
+          <input type="text" id="email" name="email" className="focus:bg-zinc-600 bg-zinc-700 text-white p-2 rounded border  border-zinc-600" required />
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="password">Password:</label>
-          <input type="password" id="password" name="password" className="focus:bg-gray-600 bg-gray-700 text-white p-2 rounded border  border-gray-600" required />
+          <input type="password" id="password" name="password" className="focus:bg-zinc-600 bg-zinc-700 text-white p-2 rounded border  border-zinc-600" required />
         </div>
-        <button className='flex-none px-4 py-2 border border-gray-500 rounded-lg cursor-pointer' type="submit">Login</button>
-        <div className='flex items-center justify-center gap-2'><div className="w-full border-b border-gray-600"></div>OR<div className="w-full border-b border-gray-600"></div></div>
+        <button className='flex-none px-4 py-2 border border-zinc-500 bg-zinc-700 hover:bg-zinc-600 rounded-lg cursor-pointer' type="submit">Login</button>
+        <div className='flex items-center justify-center gap-2'><div className="w-full border-b border-zinc-600"></div>OR<div className="w-full border-b border-zinc-600"></div></div>
         <GoogleLoginBtn />
-        <div className="text-sm text-gray-400 flex items-center justify-center">
+        <div className="text-sm text-zinc-400 flex items-center justify-center">
           <p>Don't have an account? <Link to="/register" className="text-sm text-blue-400 hover:underline">Register</Link></p>
         </div>
       </form>

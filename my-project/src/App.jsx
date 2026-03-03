@@ -25,15 +25,15 @@ function App() {
     },
     {
       path: "/",
-      element: <><Header /><Signin /><Footer /></>
+      element: <><Header /><Signin /></>
     },
     {
       path: "/login",
-      element: <><Header /><Signin /><Footer /></>
+      element: <><Header /><Signin /></>
     },
     {
       path: "/register",
-      element: <><Header /><Signup /><Footer /></>
+      element: <><Header /><Signup /></>
     },
     {
       path: "/dashboard",

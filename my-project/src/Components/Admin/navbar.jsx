@@ -37,7 +37,7 @@ const Navbar = () => {
           )}
           <Popup
             trigger={
-              <button className="bg-gradient-to-r from-zinc-800 via-zinc-700 to-gray-700 hover:from-zinc-600 hover:to-gray-900 text-white font-bold py-2 px-4 rounded cursor-pointer">{user.name}</button>
+              <button className="bg-gradient-to-r from-gray-850 via-zinc-700 to-gray-700 hover:from-gray-700 hover:to-gray-900 text-white font-bold py-2 px-4 rounded cursor-pointer">{user.name}</button>
             }
             position="bottom center"
             closeOnDocumentClick
