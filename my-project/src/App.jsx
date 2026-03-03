@@ -71,10 +71,10 @@ function App() {
 
   return (
     <>
-      <div className='bg-zinc-900 text-white'>
+      <div className='bg-zinc-900 text-white min-h-screen'>
         <UserProvider>
           <DataProvider>
-            <RouterProvider router={router} />
+              <RouterProvider router={router} />
           </DataProvider>
         </UserProvider>
       </div>

@@ -1,21 +1,13 @@
-import { useParams,Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useUserDataContext } from '../../../Context/UserDataContext';
+import { useParams, Link } from "react-router-dom";
 import { useDataContext } from '../../../Context/DataContext';
 
 const Project = () => {
   const { id } = useParams();
-  const { user } = useUserDataContext();
   const { projects } = useDataContext();
-  const [project, setProject] = useState(null);
 
-  useEffect(() => {
-    if (projects) {
-      const foundProject = projects.find(p => p.id === parseInt(id));
-      setProject(foundProject);
-    }
-  }, [id, projects]);
-console.log("Project data:", project);
+  const project = projects ? projects.find(p => p.id === parseInt(id)) : null;
+
+  console.log("Project data:", project);
 
   return (
     <div className="p-6 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">

@@ -82,7 +82,7 @@ const Kanban = () => {
 
   const removefeature = async (columnId, featureId) => {
     try {
-      const response = await fetch(`http://localhost:3000/features/${featureId}`, {
+      await fetch(`http://localhost:3000/features/${featureId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -136,7 +136,7 @@ const Kanban = () => {
     if (sourceColumnId === columnId) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/features/${item.id}`, {
+      await fetch(`http://localhost:3000/features/${item.id}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -185,6 +185,33 @@ app.get("/logout", async (c) => {
     deleteCookie(c, "token");
     return c.json({ message: "Logged out successfully" });
 });
+app.get("/me", async (c) => {
+    let token = getCookie(c, "token");
+    if (!token) {
+        const authHeader = c.req.header("Authorization");
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+    }
+    if (!token) {
+        return c.json({ user: null });
+    }
+    try {
+        const payload = await verify(token, jwtSecret, 'HS256');
+        const { data, error } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", payload.sub)
+            .maybeSingle();
+        if (error || !data) {
+            return c.json({ user: null });
+        }
+        return c.json({ user: data });
+    }
+    catch (err) {
+        return c.json({ user: null });
+    }
+});
 // Projects API
 app.get("/projects", authMiddleware, async (c) => {
     const user = c.get("jwtPayload");

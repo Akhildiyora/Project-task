@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserDataContext } from '../../Context/UserDataContext';
 import { useDataContext } from '../../Context/DataContext.jsx'
@@ -9,7 +9,7 @@ const Projects = () => {
   const [copiedId, setCopiedId] = useState(null)
   const navigate = useNavigate();
   const { user } = useUserDataContext();
-  const { projects, setProjects, dataLoading } = useDataContext();
+  const { projects, dataLoading } = useDataContext();
 
   const CopyUrl = async (id) => {
     const currentUrl = `http://localhost:5173/public/projects/${id}/features`;
