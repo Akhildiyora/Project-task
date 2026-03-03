@@ -11,6 +11,7 @@ import Navbar from './Components/Admin/navbar'
 import Kanban from './Components/Admin/project/kanban'
 import Create from './Components/Admin/create'
 import ProtectedRoute from './Components/ProtectedRoute'
+import PublicView from './Components/Users/publicView'
 import { UserProvider } from './Context/UserDataContext'
 import { DataProvider } from './Context/DataContext'
 
@@ -18,6 +19,10 @@ function App() {
 
 
   let router = createBrowserRouter([
+    {
+      path: "/public/projects/:id/features",
+      element: <><Header /><PublicView /><Footer /></>      
+    },
     {
       path: "/",
       element: <><Header /><Signin /><Footer /></>
@@ -67,11 +72,11 @@ function App() {
   return (
     <>
       <div className='bg-zinc-900 text-white'>
-        <DataProvider>
-          <UserProvider>
+        <UserProvider>
+          <DataProvider>
             <RouterProvider router={router} />
-          </UserProvider>
-        </DataProvider>
+          </DataProvider>
+        </UserProvider>
       </div>
     </>
   )

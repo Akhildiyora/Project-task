@@ -35,8 +35,23 @@ export default function GoogleLoginBtn() {
     }, [navigate, setUser]);
 
     useEffect(() => {
+        const loadGoogleScript = () => {
+            return new Promise((resolve) => {
+                if (typeof window.google !== 'undefined') {
+                    resolve();
+                    return;
+                }
+                const script = document.createElement('script');
+                script.src = 'https://accounts.google.com/gsi/client';
+                script.async = true;
+                script.defer = true;
+                script.onload = () => resolve();
+                document.head.appendChild(script);
+            });
+        };
 
-        const initGoogle = () => {
+        const initGoogle = async () => {
+            await loadGoogleScript();
             if (typeof window.google !== 'undefined' && window.google.accounts && window.google.accounts.id) {
                 window.google.accounts.id.initialize({
                     client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,

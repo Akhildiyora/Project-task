@@ -178,51 +178,52 @@ const Kanban = () => {
               {
                 close => user?.role === 'admin' ? (
                   <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 ">
-                    <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-zinc-800 border-t-4 ">
+                    <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10 border-t-4 border-blue-400">
                       <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>X</button>
                       <form onSubmit={(e) => { e.preventDefault(); addnewFeature(); close }} className="flex flex-col w-full ">
-                        <div className="flex flex-col w-full rounded-t-md bg-zinc-700 px-1 pt-2 pb-4">
+                        <div className="flex flex-col w-full rounded-t-md bg-transparent px-1 pt-2 pb-4">
+                          <h2 className="text-xl font-bold text-white mb-4 px-3">Add Feature</h2>
                           <div className='flex items-center justify-center '>
-                            <label className='px-3 py-1 text-white bg-zinc-700' htmlFor="Feature">Feature :</label>
+                            <label className='px-3 py-1 text-white bg-transparent' htmlFor="Feature">Feature :</label>
                             <input type="text" value={newFeature.feature}
                               onChange={(e) => setnewFeature({ ...newFeature, feature: e.target.value })}
                               placeholder="Add new feature..."
-                              className="flex-grow px-3 py-1 text-zinc-400 bg-zinc-700"
+                              className="flex-grow px-3 py-1 text-zinc-400 bg-transparent"
                             />
                             <select value={activeColumn}
                               onChange={(e) => setActiveColumn(e.target.value)}
-                              className="flex items-center justify-center px-3 py-1 text-white bg-zinc-700 border-zinc-600 h-full"
+                              className="flex items-center justify-center px-3 py-1 text-white bg-transparent border-zinc-600 h-full"
                             >
                               {Object.keys(columns).map((columnId) => (
                                 <option value={columnId} key={columnId}>{columns[columnId].name}</option>
                               ))}
                             </select>
                           </div>
-                          <div className='flex items-center justify-center bg-zinc-700'>
+                          <div className='flex items-center justify-center bg-transparent'>
                             <div>
                               <label className='p-3 text-white' htmlFor="Due Date">Due Date :</label>
                               <input type="date" value={newFeature.due_date}
-                                className='flex-grow scheme-light-dark px-3 py-1 text-zinc-400  text-sm bg-zinc-700'
+                                className='flex-grow scheme-light-dark px-3 py-1 text-zinc-400  text-sm bg-transparent'
                                 onChange={(e) => setnewFeature({ ...newFeature, due_date: e.target.value })}
                               />
                             </div>
                             <div>
                               <label className='p-3 text-white' htmlFor="Assign">Assign To :</label>
-                              <input type="text" value={newFeature.assign} placeholder='Assign To'
-                                className='flex-grow px-3 py-1 text-zinc-400 bg-zinc-700 '
+                              <input type="text" value={newFeature.assign} placeholder='Email of Assign To...'
+                                className='flex-grow px-3 py-1 text-zinc-400 bg-transparent '
                                 onChange={(e) => setnewFeature({ ...newFeature, assign: e.target.value })}
                               />
                             </div>
                           </div>
-                          <label className='px-3 py-1 text-white bg-zinc-700' htmlFor="Description">Description :</label>
+                          <label className='px-3 py-1 text-white bg-transparent' htmlFor="Description">Description :</label>
                           <textarea value={newFeature.desc}
                             onChange={(e) => setnewFeature({ ...newFeature, desc: e.target.value })}
                             placeholder="Enter description..."
-                            className="flex-grow px-3 py-1 text-zinc-400 bg-zinc-700  border-zinc-600"
+                            className="flex-grow px-3 py-1 text-zinc-400 bg-transparent  border-zinc-600"
                           />
                         </div>
 
-                        <button type='submit' className='border-t-2 border-black bg-gradient-to-r from-yellow-600 to-amber-500 text-white font-medium hover:from-yellow-500 hover:to-amber-500 transition-all duration-200 cursor-pointer'>Add</button>
+                        <button type='submit' className='border-t-2 border-black bg-gradient-to-r from-blue-500 to-blue-400 text-white font-medium hover:from-yellow-500 hover:to-amber-500 transition-all duration-200 cursor-pointer'>Add</button>
                       </form>
                     </div>
                   </div>
@@ -237,48 +238,48 @@ const Kanban = () => {
               {
                 close => editFeatureData && (
                   <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 ">
-                    <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-zinc-800 border-t-4 border-yellow-600">
+                    <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-800 to-yellow-600/10 border-t-4 border-yellow-600">
                       <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>X</button>
                       <form onSubmit={(e) => { e.preventDefault(); submitEditFeature(); }} className="flex flex-col w-full ">
-                        <div className="flex flex-col w-full rounded-t-md bg-zinc-700 px-1 pt-2 pb-4">
+                        <div className="flex flex-col w-full rounded-t-md bg-transparent px-1 pt-2 pb-4">
                           <h2 className="text-xl font-bold text-white mb-4 px-3">Edit Feature</h2>
                           <div className='flex items-center justify-center '>
-                            <label className='px-3 py-1 text-white bg-zinc-700' htmlFor="Feature">Feature :</label>
+                            <label className='px-3 py-1 text-white bg-transparent' htmlFor="Feature">Feature :</label>
                             <input type="text" value={editFeatureData.feature}
                               onChange={(e) => setEditFeatureData({ ...editFeatureData, feature: e.target.value })}
                               placeholder="Feature name..."
-                              className="flex-grow px-3 py-1 text-zinc-400 bg-zinc-700"
+                              className="flex-grow px-3 py-1 text-zinc-400 bg-transparent"
                             />
                             <select value={editFeatureData.status}
                               onChange={(e) => setEditFeatureData({ ...editFeatureData, status: e.target.value })}
-                              className="flex items-center justify-center px-3 py-1 text-white bg-zinc-700 border-zinc-600 h-full"
+                              className="flex items-center justify-center px-3 py-1 text-white bg-transparent border-zinc-600 h-full"
                             >
                               {Object.keys(columns).map((columnId) => (
-                                <option value={columnId} key={columnId}>{columns[columnId].name}</option>
+                                <option className='bg-transparent' value={columnId} key={columnId}>{columns[columnId].name}</option>
                               ))}
                             </select>
                           </div>
-                          <div className='flex items-center justify-center bg-zinc-700'>
+                          <div className='flex items-center justify-center bg-transparent'>
                             <div>
                               <label className='p-3 text-white' htmlFor="Due Date">Due Date :</label>
                               <input type="date" value={editFeatureData.due_date || ""}
-                                className='flex-grow scheme-light-dark px-3 py-1 text-zinc-400  text-sm bg-zinc-700'
+                                className='flex-grow scheme-light-dark px-3 py-1 text-zinc-400  text-sm bg-transparent'
                                 onChange={(e) => setEditFeatureData({ ...editFeatureData, due_date: e.target.value })}
                               />
                             </div>
                             <div>
                               <label className='p-3 text-white' htmlFor="Assign">Assign To :</label>
-                              <input type="text" value={editFeatureData.assign || ""} placeholder='Assign To'
-                                className='flex-grow px-3 py-1 text-zinc-400 bg-zinc-700 '
+                              <input type="text" value={editFeatureData.assign || ""} placeholder='Email of Assign To...'
+                                className='flex-grow px-3 py-1 text-zinc-400 bg-transparent '
                                 onChange={(e) => setEditFeatureData({ ...editFeatureData, assign: e.target.value })}
                               />
                             </div>
                           </div>
-                          <label className='px-3 py-1 text-white bg-zinc-700' htmlFor="Description">Description :</label>
+                          <label className='px-3 py-1 text-white bg-transparent' htmlFor="Description">Description :</label>
                           <textarea value={editFeatureData.desc || ""}
                             onChange={(e) => setEditFeatureData({ ...editFeatureData, desc: e.target.value })}
                             placeholder="Enter description..."
-                            className="flex-grow px-3 py-1 text-zinc-400 bg-zinc-700  border-zinc-600"
+                            className="flex-grow px-3 py-1 text-zinc-400 bg-transparent  border-zinc-600"
                           />
                         </div>
 
@@ -290,7 +291,7 @@ const Kanban = () => {
               }
             </Popup>
           </div>
-          <div className="flex gap-6 overflow-x-auto pb-6 w-full items-center justify-center">
+          <div className="flex flex-wrap gap-6 overflow-x-auto pb-6 w-full items-start justify-center">
             {Object.keys(columns).map((columnId) => (
               <div key={columnId} className={`flex-shrink-0 w-80 bg-zinc-800 rounded-lg shadow-x-lg border-t-4 ${columnStyles[columnId].border}`}
                 onDragOver={user?.role === 'admin' ? (e) => handleDragOver(e, columnId) : undefined}
@@ -300,7 +301,7 @@ const Kanban = () => {
                   {columns[columnId].name}
                   <span className="ml-2 px-2 py-1 bg-zinc-800 bg-opacity-30 rounded-full text-sm">{columns[columnId].items.length}</span>
                 </div>
-                <div className="p-3 min-h-64">
+                <div className="p-3 min-h-64 ">
                   {columns[columnId].items.length === 0 ? (
                     <div className="text-center text-zinc-500 italic text-sm ">Add Features Here</div>
                   ) : (

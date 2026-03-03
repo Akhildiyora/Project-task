@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useUserDataContext } from '../../Context/UserDataContext';
 import Popup from 'reactjs-popup';
+import { AiOutlineProject } from "react-icons/ai";
 
 const Navbar = () => {
   const { user, setUser } = useUserDataContext();
@@ -24,7 +25,7 @@ const Navbar = () => {
   return (
     <div className="bg-gradient-to-r from-zinc-800 via-zinc-700 to-gray-900 text-white w-full">
       <div className="flex justify-between items-center p-4 max-w-350 mx-auto ">
-        <div><img src="./logo.png" alt="Logo" className="h-10 w-10" /></div>
+        <div><AiOutlineProject className="h-10 w-10" /></div>
         <div className="space-x-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-400 to-blue-400">
           <Link className=' font-semibold hover:font-bold' to="/dashboard">Home</Link>
           <Link className=' font-semibold hover:font-bold' to="/projects">Projects</Link>

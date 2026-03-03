@@ -225,7 +225,7 @@ app.get("/projects", authMiddleware, async (c) => {
   const { data, error } = await supabase
     .from("projects")
     .select("*")
-    .eq("user_id", user.sub);
+    // .eq("user_id", user.sub);
   
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
@@ -238,7 +238,20 @@ app.get("/projects/:id", authMiddleware, async (c) => {
     .from("projects")
     .select("*")
     .eq("id", id)
-    .eq("user_id", user.sub)
+    // .eq("user_id", user.sub)
+    .single();
+  
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data);
+});
+
+app.get("/public/projects/:id", async (c) => {
+  const id = c.req.param("id");
+  const user = c.get("jwtPayload");
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
     .single();
   
   if (error) return c.json({ error: error.message }, 500);
@@ -268,6 +281,23 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
 
 app.get("/features", authMiddleware, async (c) => {
   const user = c.get("jwtPayload");
+  const projectId = c.req.query("projectId");
+  
+  let query = supabase
+    .from("features")
+    .select("*");
+    
+  if (projectId) {
+    query = query.eq("project_id", projectId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data);
+});
+
+app.get("/public/features", async (c) => {
   const projectId = c.req.query("projectId");
   
   let query = supabase

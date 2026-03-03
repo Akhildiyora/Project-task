@@ -1,13 +1,24 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import { useUserDataContext } from './UserDataContext';
 
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
+    const { user, loading: userLoading } = useUserDataContext();
     const [projects, setProjects] = useState([]);
     const [dataLoading, setDataLoading] = useState(true);
 
     useEffect(() => {
+        if (userLoading) return;
+
+        if (!user) {
+            setProjects([]);
+            setDataLoading(false);
+            return;
+        }
+
         const fetchProjects = async () => {
+            setDataLoading(true);
             try {
                 const response = await fetch('http://localhost:3000/projects', { credentials: 'include' });
                 if (response.ok) {
@@ -25,7 +36,7 @@ export const DataProvider = ({ children }) => {
         };
 
         fetchProjects();
-    }, []);
+    }, [user, userLoading]);
 
     return (
         <DataContext.Provider value={{ projects, setProjects, dataLoading }}>

@@ -9,27 +9,31 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3000/dashboard', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
+    async function fetchDashboardData() {
+      try {
+        const response = await fetch('http://localhost:3000/dashboard', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
         if (!response.ok) {
           throw new Error('Unauthorized');
         }
-        return response.json();
-      })
-      .then(data => {
+        const data = await response.json();
         console.log("Dashboard data:", data);
-      })
-      .catch(error => {
-        console.error("Error fetching dashboard data:", error);
+        if (!user) {
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error("Dashboard fetch error:", error);
         navigate('/login');
-      });
-  }, [navigate]);
+      }
+    }
+
+    fetchDashboardData();
+  }, [user, navigate]);
 
   return (
     <div className='p-6 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen'>
