@@ -290,7 +290,7 @@ app.get("/public/projects/:id", async (c) => {
 
 app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
   const user = c.get("jwtPayload");
-  const { name, description, dueDate, members } = await c.req.json();
+  const { name, description, dueDate, members, logo } = await c.req.json();
   
   const { data, error } = await supabase
     .from("projects")
@@ -299,13 +299,62 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
       description, 
       due_date: dueDate, 
       user_id: user.sub,
-      members: members
+      members: members,
+      images: logo
     })
     .select("*")
     .single();
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data, 201);
+});
+
+app.post("/upload-logo", authMiddleware, async (c) => {
+  try {
+    const body = await c.req.parseBody();
+    const file = body["file"];
+    
+    if (!file || typeof file === "string") {
+      return c.json({ error: "No file uploaded" }, 400);
+    }
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `Gallery/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from("Images")
+      .upload(filePath, file);
+
+    if (error) {
+      console.error("Storage upload error:", error);
+      return c.json({ error: "Failed to upload to storage" }, 500);
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("Images")
+      .getPublicUrl(filePath);
+
+    return c.json({ url: publicUrl });
+  } catch (error) {
+    console.error("Upload handler error:", error);
+    return c.json({ error: "Internal server error" }, 500);
+  }
+});
+
+app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
+  const id = c.req.param("id");
+  const updates = await c.req.json();
+  
+  const { data, error } = await supabase
+    .from("projects")
+    .update(updates)
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data);
 });
 
 
