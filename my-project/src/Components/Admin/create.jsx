@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserDataContext } from '../../Context/UserDataContext';
+import defaultLogo from '/logo.jpg'
 
 const Create = () => {
+  const [logoUrl, setLogoUrl] = useState(defaultLogo)
   const { user } = useUserDataContext();
   const navigate = useNavigate();
 
@@ -9,10 +12,11 @@ const Create = () => {
     e.preventDefault();
     const formData = {
       name: e.target[0].value,
-      dueDate: e.target[2].value,
-      description: e.target[3].value,
-      members: e.target[1].value.split(',').map(email => email.trim()),
-      userId: user.id
+      dueDate: e.target[3].value,
+      description: e.target[4].value,
+      members: e.target[2].value.split(',').map(email => email.trim()),
+      userId: user.id,
+      logo: logoUrl !== defaultLogo ? logoUrl : null
     };
 
     try {
@@ -35,6 +39,36 @@ const Create = () => {
     }
   };
 
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('http://localhost:3000/upload-logo', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      setLogoUrl(data.url);
+
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload image.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div>
       <div className="p-6 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex flex-col items-center justify-center"  >
@@ -43,6 +77,26 @@ const Create = () => {
           <div className="flex flex-col w-full ">
             <label className="text-white mb-2" required>Project Name</label>
             <input type="text" placeholder="Enter project name" className="bg-zinc-700 text-white p-2 rounded-md border border-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div className='flex gap-2 items-center justify-between'>
+            <div className='flex flex-col'>
+              Upload Logo
+              <span className='text-xs text-gray-600'>Size must be under 10MB</span>
+            </div>
+            <div className='flex flex-col items-end gap-2'>
+
+              <input
+                type='file'
+                accept="image/*"
+                onChange={handleUpload}
+                disabled={isUploading}
+                className='text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 cursor-pointer'
+              />
+              {isUploading && <span className="text-xs text-blue-400">Uploading...</span>}
+              {logoUrl && logoUrl !== defaultLogo && (
+                <img src={logoUrl} alt="Logo Preview" className="h-12 w-12 object-cover rounded" />
+              )}
+            </div>
           </div>
           <div>
             <label className="text-white mb-2">Add Members</label>

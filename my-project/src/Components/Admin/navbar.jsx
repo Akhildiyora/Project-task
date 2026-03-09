@@ -23,21 +23,23 @@ const Navbar = () => {
   if (!user) return null;
 
   return (
-    <div className="bg-gradient-to-r from-zinc-800 via-zinc-700 to-gray-900 text-white w-full">
+    <div className="fixed top-0 bg-gradient-to-r from-zinc-800 via-zinc-700 to-gray-900 text-white w-full">
       <div className="flex justify-between items-center p-4 max-w-350 mx-auto ">
-        <div><AiOutlineProject className="h-10 w-10" /></div>
-        <div className="space-x-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-400 to-blue-400">
-          <Link className=' font-semibold hover:font-bold' to="/dashboard">Home</Link>
-          <Link className=' font-semibold hover:font-bold' to="/projects">Projects</Link>
-          <Link className=' font-semibold hover:font-bold' to="/status">Status</Link>
+        <div className='flex items-center gap-2 text-xl font-semibold'><AiOutlineProject className="h-10 w-10" />Projectify</div>
+        <div className='border border-zinc-600 bg-zinc-800/80 p-2 px-6 rounded-full'>
+          <div className="space-x-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-400 to-blue-400">
+            <Link className=' font-semibold hover:font-bold' to="/dashboard">Home</Link>
+            <Link className=' font-semibold hover:font-bold' to="/projects">Projects</Link>
+            <Link className=' font-semibold hover:font-bold' to="/status">Status</Link>
+          </div>
         </div>
         <div className="flex space-x-4 ">
           {user.role === 'admin' && (
-            <Link className="bg-gradient-to-r from-blue-600 via-violet-400 to-blue-500 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500 hover:to-blue-400 transition-all duration-200" to="/projects/create">Create Project</Link>
+            <Link className="bg-gradient-to-r from-blue-600/50 via-violet-400/50 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200" to="/projects/create">Create Project</Link>
           )}
           <Popup
             trigger={
-              <button className="bg-gradient-to-r from-gray-850 via-zinc-700 to-gray-700 hover:from-gray-700 hover:to-gray-900 text-white font-bold py-2 px-4 rounded cursor-pointer">{user.name}</button>
+              <button className="bg-gradient-to-r from-gray-850 via-zinc-700/50 to-gray-700/30 hover:from-gray-700/50 hover:to-gray-900/50 text-white font-bold py-2 px-4 rounded cursor-pointer">{user.name}</button>
             }
             position="bottom center"
             closeOnDocumentClick

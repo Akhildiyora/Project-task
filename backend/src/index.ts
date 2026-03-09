@@ -309,7 +309,7 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
   return c.json(data, 201);
 });
 
-app.post("/upload-logo", authMiddleware, async (c) => {
+app.post("/upload-images", authMiddleware, async (c) => {
   try {
     const body = await c.req.parseBody();
     const file = body["file"];
@@ -331,11 +331,17 @@ app.post("/upload-logo", authMiddleware, async (c) => {
       return c.json({ error: "Failed to upload to storage" }, 500);
     }
 
-    const { data: { publicUrl } } = supabase.storage
+    // Since the bucket isn't public, generate a signed URL valid for 1 year (31536000 seconds)
+    const { data: signedData, error: signError } = await supabase.storage
       .from("Images")
-      .getPublicUrl(filePath);
+      .createSignedUrl(filePath, 31536000);
 
-    return c.json({ url: publicUrl });
+    if (signError || !signedData?.signedUrl) {
+      console.error("Storage signing error:", signError);
+      return c.json({ error: "Failed to generate signed URL" }, 500);
+    }
+
+    return c.json({ url: signedData.signedUrl });
   } catch (error) {
     console.error("Upload handler error:", error);
     return c.json({ error: "Internal server error" }, 500);

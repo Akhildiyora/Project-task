@@ -2,7 +2,7 @@
 
 /* width */
 ::-webkit-scrollbar {
-    background-color: rgb(37, 38, 46);
+  background-color: rgb(37, 38, 46);
   width: 10px;
 }
 

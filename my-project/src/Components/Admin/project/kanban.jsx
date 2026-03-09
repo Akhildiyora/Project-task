@@ -80,6 +80,16 @@ const Kanban = () => {
     }
   }
 
+  const permitRemove = ((columnId, featrueid) => {
+    if (confirm("Are You Sure to Delete This Feature!")) {
+      removefeature(columnId, featrueid);
+    } else {
+      return;
+    }
+
+    return;
+  })
+
   const removefeature = async (columnId, featureId) => {
     try {
       await fetch(`http://localhost:3000/features/${featureId}`, {
@@ -87,10 +97,12 @@ const Kanban = () => {
         credentials: 'include'
       });
       fetchfeatures();
+
     } catch (error) {
       console.error("Error removing feature:", error);
       alert(error.message);
     }
+
   }
 
   const submitEditFeature = async () => {
@@ -172,7 +184,7 @@ const Kanban = () => {
           <div className='flex items-center justify-between w-full px-20 gap-4'>
             <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-500 to-rose-400'>Features of {project?.project_name || "Loading..."}</h1>
 
-            <Popup trigger={<button className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-2 rounded hover:from-blue-300 hover:to-blue-500 transition cursor-pointer">Add New Feature</button>}
+            <Popup onClose={() => setnewFeature(feature.length === 0)} trigger={<button className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-2 rounded hover:from-blue-300 hover:to-blue-500 transition cursor-pointer">Add New Feature</button>}
               modal nested
             >
               {
@@ -180,7 +192,7 @@ const Kanban = () => {
                   <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 ">
                     <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10 border-t-4 border-blue-400">
                       <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>X</button>
-                      <form onSubmit={(e) => { e.preventDefault(); addnewFeature(); close }} className="flex flex-col w-full ">
+                      <form onSubmit={(e) => { e.preventDefault(); addnewFeature(); }} className="flex flex-col w-full ">
                         <div className="flex flex-col w-full rounded-t-md bg-transparent px-1 pt-2 pb-4">
                           <h2 className="text-xl font-bold text-white mb-4 px-3">Add Feature</h2>
                           <div className='flex items-center justify-center '>
@@ -195,7 +207,7 @@ const Kanban = () => {
                               className="flex items-center justify-center px-3 py-1 text-white bg-transparent border-zinc-600 h-full"
                             >
                               {Object.keys(columns).map((columnId) => (
-                                <option value={columnId} key={columnId}>{columns[columnId].name}</option>
+                                <option className='bg-zinc-800 text-white' value={columnId} key={columnId}>{columns[columnId].name}</option>
                               ))}
                             </select>
                           </div>
@@ -223,7 +235,7 @@ const Kanban = () => {
                           />
                         </div>
 
-                        <button type='submit' className='border-t-2 border-black bg-gradient-to-r from-blue-500 to-blue-400 text-white font-medium hover:from-yellow-500 hover:to-amber-500 transition-all duration-200 cursor-pointer'>Add</button>
+                        <button type='submit' className='border-t-2 py-1 border-black bg-gradient-to-r from-blue-500 to-blue-400 text-white font-medium hover:from-blue-400 hover:to-sky-500 transition-all duration-200 cursor-pointer'>Add Feature</button>
                       </form>
                     </div>
                   </div>
@@ -321,7 +333,7 @@ const Kanban = () => {
                           <div className='flex flex-col items-center justify-center'>
                             <button onClick={() => setEditFeatureData(item)} className='text-zinc-400 hover:text-blue-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center'>
                               <span className='text-lg cursor-pointer '><FaRegEdit /></span>
-                            </button><button onClick={() => removefeature(columnId, item.id)} className='text-zinc-400 hover:text-red-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
+                            </button><button onClick={() => permitRemove(columnId, item.id)} className='text-zinc-400 hover:text-red-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
                               <span className='text-lg cursor-pointer '>X</span>
                             </button>
                           </div>
