@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useUserDataContext } from '../../Context/UserDataContext'
+import formatDateManually from '../dateFormater';
 
 const Status = () => {
   const { user } = useUserDataContext();
@@ -80,7 +81,7 @@ const Status = () => {
 
   return (
     <div>
-      <div className='p-6 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
+      <div className='p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
         <div className='flex items-center flex-col gap-4 w-full max-w-6xl'>
           <div className='flex items-center justify-between w-full px-20 gap-4'>
             <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-500 to-rose-400'>Projects Status</h1>
@@ -105,13 +106,13 @@ const Status = () => {
                         onDragStart={user?.role === 'admin' ? () => handleDragStart(columnId, item) : undefined}>
                         <div className='flex flex-col justify-center w-full'>
                           <div className='flex items-center'>
-                            <img src={`${item.logo}`} alt="logo" className='h-10 w-10 m-2' />
+                            <img src={`${item.logo}`} className='h-10 w-10 m-2' />
                           <div className="flex flex-col items-start justify-center text-sm mt-1 w-full ">
                             <span className='mr-2 font-semibold text-lg text-blue-300'>{item.project_name}</span>
-                            <span className='text-sm text-zinc-400'>Deadline: {item.due_date}</span>
+                            <span className='text-sm text-zinc-400'>Deadline: {formatDateManually(item.due_date)}</span>
                           </div>
                           </div>
-                          <span className='text-sm text-zinc-300 mt-2 line-clamp-2'>{item.description}</span>
+                          <span className='text-sm text-zinc-300 mt-2 line-clamp-2 truncate'>{item.description}</span>
                           <div className='mt-3 flex items-center w-full'>
                             <Link to={`/projects/${item.id}`} className='text-xs px-3 py-1 bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 rounded transition-colors w-full text-center'>
                               View Project Details

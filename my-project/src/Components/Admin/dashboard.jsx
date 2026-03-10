@@ -38,7 +38,7 @@ const Dashboard = () => {
 
   return (
     <div className='p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen'>
-      <div className='max-w-350 mx-auto'>
+      <div className='max-w-320 mx-auto'>
         <h2 className='text-2xl font-bold text-white pt-4'>Welcome back, {user?.name || 'User'}</h2>
         <div className='text-sm text-gray-400'>Here's an overview of Your Project</div>
         <div className='flex items-start mt-8 gap-6'>

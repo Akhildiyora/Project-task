@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useUserDataContext } from '../../../Context/UserDataContext'
 import Popup from 'reactjs-popup';
 import { FaRegEdit } from "react-icons/fa";
+import formatDateManually from '../../dateFormater';
 
 const Kanban = () => {
   const { id: projectId } = useParams();
@@ -165,21 +166,21 @@ const Kanban = () => {
   const columnStyles = {
     todo: {
       header: "bg-gradient-to-r from-blue-600 to-blue-400",
-      border: "border-blue-400",
+      border: "border-blue-400 bg-gradient-to-r from-zinc-800 to-blue-800/20",
     },
     inProgress: {
       header: "bg-gradient-to-r from-yellow-600 to-yellow-400",
-      border: "border-yellow-400",
+      border: "border-yellow-400 bg-gradient-to-r from-zinc-800 to-yellow-800/20",
     },
     done: {
       header: "bg-gradient-to-r from-green-600 to-green-400",
-      border: "border-green-400",
+      border: "border-green-400 bg-gradient-to-r from-zinc-800 to-green-800/20",
     }
   }
 
   return (
     <div>
-      <div className='p-6 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
+      <div className='p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
         <div className='flex items-center flex-col gap-4 w-full max-w-6xl'>
           <div className='flex items-center justify-between w-full px-20 gap-4'>
             <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-500 to-rose-400'>Features of {project?.project_name || "Loading..."}</h1>
@@ -189,7 +190,7 @@ const Kanban = () => {
             >
               {
                 close => user?.role === 'admin' ? (
-                  <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 ">
+                  <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 backdrop-blur-md">
                     <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10 border-t-4 border-blue-400">
                       <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>X</button>
                       <form onSubmit={(e) => { e.preventDefault(); addnewFeature(); }} className="flex flex-col w-full ">
@@ -249,7 +250,7 @@ const Kanban = () => {
             <Popup open={!!editFeatureData} onClose={() => setEditFeatureData(null)} modal nested>
               {
                 close => editFeatureData && (
-                  <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 ">
+                  <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 backdrop-blur-md">
                     <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-800 to-yellow-600/10 border-t-4 border-yellow-600">
                       <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>X</button>
                       <form onSubmit={(e) => { e.preventDefault(); submitEditFeature(); }} className="flex flex-col w-full ">
@@ -305,7 +306,7 @@ const Kanban = () => {
           </div>
           <div className="flex flex-wrap gap-6 overflow-x-auto pb-6 w-full items-start justify-center">
             {Object.keys(columns).map((columnId) => (
-              <div key={columnId} className={`flex-shrink-0 w-80 bg-zinc-800 rounded-lg shadow-x-lg border-t-4 ${columnStyles[columnId].border}`}
+              <div key={columnId} className={`flex-shrink-0 w-80 rounded-lg shadow-x-lg border-t-4 ${columnStyles[columnId].border}`}
                 onDragOver={user?.role === 'admin' ? (e) => handleDragOver(e, columnId) : undefined}
                 onDrop={user?.role === 'admin' ? (e) => handleDrop(e, columnId) : undefined}
               >
@@ -313,31 +314,33 @@ const Kanban = () => {
                   {columns[columnId].name}
                   <span className="ml-2 px-2 py-1 bg-zinc-800 bg-opacity-30 rounded-full text-sm">{columns[columnId].items.length}</span>
                 </div>
-                <div className="p-3 min-h-64 ">
+                <div className="p-3 min-h-64 border border-zinc-700 rounded-lg">
                   {columns[columnId].items.length === 0 ? (
                     <div className="text-center text-zinc-500 italic text-sm ">Add Features Here</div>
                   ) : (
                     columns[columnId].items.map((item) => (
-                      <div key={item.id} className={`p-4 mb-3 bg-zinc-700 text-white shadow-md flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
+                      <div key={item.id} className={`p-4 mb-3 bg-zinc-700 text-white shadow-md rounded-lg border border-zinc-700 flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
                         draggable={user?.role === 'admin'}
                         onDragStart={user?.role === 'admin' ? () => handleDragStart(columnId, item) : undefined}>
-                        <div className='flex flex-col justify-center'>
-                          <span className='mr-2'>{item.feature}</span>
-                          <div className="flex gap-5 text-sm">
-                            <span className='text-sm text-zinc-400'>Due On: {item.due_date}</span>
-                            <span className='text-sm text-zinc-400'>{item.assign}</span>
+                        <div className='flex flex-col justify-center w-full'>
+                          <div className="flex justify-between">
+                            <span className='mr-2'>{item.feature}</span>
+                            {user?.role === 'admin' && (
+                              <div className='flex items-center justify-center'>
+                                <button onClick={() => setEditFeatureData(item)} className='text-zinc-400 hover:text-blue-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
+                                  <span className='text-lg cursor-pointer '><FaRegEdit className='size-3' /></span>
+                                </button><button onClick={() => permitRemove(columnId, item.id)} className='text-zinc-400 hover:text-red-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
+                                  <span className='text-md cursor-pointer'>X</span>
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <span className='text-sm text-zinc-400'>{item.desc}</span>
-                        </div>
-                        {user?.role === 'admin' && (
-                          <div className='flex flex-col items-center justify-center'>
-                            <button onClick={() => setEditFeatureData(item)} className='text-zinc-400 hover:text-blue-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center'>
-                              <span className='text-lg cursor-pointer '><FaRegEdit /></span>
-                            </button><button onClick={() => permitRemove(columnId, item.id)} className='text-zinc-400 hover:text-red-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
-                              <span className='text-lg cursor-pointer '>X</span>
-                            </button>
+                          <div className="flex gap-5 text-sm justify-between">
+                            <span className='text-sm text-zinc-400'>{item.assign}</span>
+                            <span className='text-sm text-zinc-400'>{formatDateManually(item.due_date)}</span>
                           </div>
-                        )}
+                        </div>
                       </div>
                     ))
                   )}

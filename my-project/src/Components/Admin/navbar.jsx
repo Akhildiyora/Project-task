@@ -35,11 +35,11 @@ const Navbar = () => {
         </div>
         <div className="flex space-x-4 ">
           {user.role === 'admin' && (
-            <Link className="bg-gradient-to-r from-blue-600/50 via-violet-400/50 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200" to="/projects/create">Create Project</Link>
+            <Link className="bg-gradient-to-r from-blue-600/50 via-violet-400/50 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200" to="/projects/create">+ New Project</Link>
           )}
           <Popup
             trigger={
-              <button className="bg-gradient-to-r from-gray-850 via-zinc-700/50 to-gray-700/30 hover:from-gray-700/50 hover:to-gray-900/50 text-white font-bold py-2 px-4 rounded cursor-pointer">{user.name}</button>
+              <button className="flex items-center bg-gradient-to-r from-gray-850 via-zinc-700/50 to-gray-700/30 hover:from-gray-700/50 hover:to-gray-900/50 text-white font-bold py-2 px-4 rounded-md cursor-pointer gap-2"><div className='size-6 bg-gray-900 rounded-lg text-sm flex justify-center items-center'>A</div> {user.name}</button>
             }
             position="bottom center"
             closeOnDocumentClick

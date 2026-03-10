@@ -1,9 +1,16 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react"
 import { useDataContext } from '../../../Context/DataContext';
+import { MdOutlineEdit, MdOutlineDateRange } from "react-icons/md";
+import { BsPerson, BsFillPersonFill } from "react-icons/bs";
+import formatDateManually from "../../dateFormater";
+import Popup from 'reactjs-popup';
+import { useUserDataContext } from "../../../Context/UserDataContext";
+import { IoTrashOutline } from "react-icons/io5";
 
 const Project = () => {
   const { id } = useParams();
+  const { user } = useUserDataContext();
   const { projects, setProjects } = useDataContext();
 
   const project = projects ? projects.find(p => p.id === parseInt(id)) : null;
@@ -82,49 +89,100 @@ const Project = () => {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
-      {project && (
-        <>
-          <div className="p-6 bg-zinc-800 rounded-lg shadow-lg">
-            <div>
-              <h3 className="text-2xl font-bold text-white">{project.project_name}</h3>
-              <button>edit button</button>
+    <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
+      <div className="max-w-320 mx-auto">
+        {project && (
+          <>
+            <div className="flex w-full justify-between">
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
+                  <img src={`${project.logo}`} className="object-contain h-8 w-8" />
+                </div>
+                <h3 className="text-3xl font-bold text-white">{project.project_name}</h3>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Link to={`/projects/${project.id}/features`} className="text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 ">Features</Link>
+                <button className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
+                <button className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+              </div>
             </div>
             <p className="text-zinc-300 mt-2">{project.description}</p>
-            <p className="text-zinc-400 mt-2">Due Date: {project.due_date}</p>
-            <p className="text-zinc-400 mt-2">Members: {project.members}</p>
-            <Link to={`/projects/${project.id}/features`} className="text-blue-400 text-sm hover:underline">Go To Features</Link>
-          </div>
-
-          <div className="mt-8 p-6 bg-zinc-800 rounded-lg shadow-lg">
-            <h4 className="text-xl font-bold text-white mb-4">Project Gallery</h4>
-            <div className="mb-4">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={isUploading}
-                className="text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 cursor-pointer"
-              />
-              {isUploading && <span className="text-xs text-blue-400 ml-2">Uploading images...</span>}
+            <div className="flex mt-8 items-start gap-6">
+              <div className="p-6 bg-zinc-800 rounded-lg shadow-lg min-w-[40vh] border-2 border-zinc-700">
+                <div className="text-gray-500">PROJECT DETAILS</div>
+                <div className="text-zinc-400 mt-4 flex flex-col">
+                  <span className="text-sm">Due Date</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <MdOutlineDateRange className="size-4" />
+                    <span className="text-white">{formatDateManually(project.due_date)}</span>
+                  </div>
+                </div>
+                <div className="static text-zinc-400 mt-4 flex flex-col">
+                  <span className="text-sm">Members</span>
+                  {project.member?.map((member,id) => (
+                      <div key={id} className="flex items-center gap-7 mt-1" >
+                        <div className="relative flex items-center mt-2">
+                          <BsPerson className="absolute size-3 left-1.5" />
+                          <BsFillPersonFill className="absolute size-3.5" />
+                        </div>
+                        <span className="text-white">{member}</span>
+                      </div>
+                  ))}
+              </div>
             </div>
 
-            {displayImages.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {displayImages.map((imgUrl, id) => (
-                  <div key={id} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-700">
-                    <img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain" />
-                  </div>
-                ))}
+            <div className="p-6 bg-zinc-800 rounded-lg shadow-lg border-2 border-zinc-700 w-full">
+              <div className="flex justify-between">
+                <h4 className="text-xl font-bold text-white mb-4">Project Gallery</h4>
+                <div className="mb-4">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={isUploading}
+                    className="text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 cursor-pointer"
+                  />
+                  {isUploading && <span className="text-xs text-blue-400 ml-2">Uploading images...</span>}
+                </div>
               </div>
-            ) : (
-              <p className="text-zinc-500 text-sm">No images uploaded yet.</p>
-            )}
+
+              {displayImages.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {displayImages.map((imgUrl, id) => (
+                    <div key={id} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-700">
+                      {/* <img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain hover:opacity-50" /> */}
+                      <Popup trigger={<img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain hover:object-cover hover:opacity-50 cursor-pointer transition duration-200" />}
+                        modal nested
+                      >
+                        {
+                          close => user ? (
+                            <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 ">
+                              <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10">
+                                <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>Close</button>
+                                <img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain" />
+
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-zinc-800 p-6 rounded-lg text-white">
+                              <p>You do not have permission to view Images.</p>
+                              <button onClick={close} className="mt-4 bg-zinc-600 px-3 py-1 rounded">Close</button>
+                            </div>
+                          )}
+                      </Popup>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-zinc-500 text-sm">No images uploaded yet.</p>
+              )}
+            </div>
           </div>
-        </>
-      )}
+      </>
+        )}
     </div>
+    </div >
   )
 }
 
