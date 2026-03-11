@@ -64,12 +64,12 @@ const Dashboard = () => {
               <p className='text-gray-400'>No projects found. Create a new project to get started!</p>
             )}
           </div>
-          <div className='h-[13vw] w-[25vw] bg-zinc-900/50 rounded-xl border border-zinc-700/50 flex flex-col items-center justify-center'>
-            <div className='text-2xl size-10 bg-white rounded-full flex items-center justify-center text-black leading-none'>+</div>
+          <Link to="/projects/create" className='h-[13vw] w-[25vw] bg-zinc-900/50 rounded-xl border border-zinc-700/50 hover:bg-zinc-900/20 cursor-pointer flex flex-col items-center justify-center'>
+            <div  className='text-2xl size-10 bg-white rounded-full flex items-center justify-center text-black leading-none'>+</div>
             
             <span>Create project</span>
             <span className='text-sm text-gray-500'>Start tracking a new Initiative</span>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
 const formatDateManually = (dateString) => {
   const date = new Date(dateString);
   const months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
   const monthName = months[date.getUTCMonth()]; 
   const day = date.getUTCDate();

@@ -5,6 +5,8 @@ import { useDataContext } from '../../Context/DataContext.jsx'
 import { TbCopy, TbCopyCheckFilled } from "react-icons/tb";
 import { IoMdOpen } from "react-icons/io";
 import formatDateManually from '../dateFormater.jsx';
+import { MdOutlineDateRange } from "react-icons/md";
+
 
 const Projects = () => {
   const [copiedId, setCopiedId] = useState(null)
@@ -43,7 +45,7 @@ const Projects = () => {
         ) : (
           <div className="grid grid-cols-3 gap-4">
             {projects.map(project => (
-              <div key={project.id} className="bg-zinc-800 p-6 rounded-2xl shadow hover:bg-zinc-750 transition border border-zinc-600">
+              <div key={project.id} className="bg-zinc-800 hover:bg-zinc-700/40 p-6 rounded-2xl shadow hover:bg-zinc-750 transition border border-zinc-600">
                 <div className='flex justify-between items-center'>
                   <h3 onClick={() => navigate(`/projects/${project.id}`)} className="text-xl font-semibold cursor-pointer">{project.project_name}</h3>
                   <div className='flex items-center '>
@@ -55,7 +57,7 @@ const Projects = () => {
 
                 <div className='border-zinc-600 border-t'></div>
                 <div className="flex justify-between items-center mt-4">
-                  <span className="text-xs text-zinc-500 flex flex-col">Due <span className='text-white text-sm'>{formatDateManually(project.due_date)}</span></span>
+                  <span className="text-xs text-zinc-500 flex items-center gap-2"><MdOutlineDateRange className="size-4" /><span className='text-sm'>{formatDateManually(project.due_date)}</span></span>
                   <button onClick={(e) => { e.stopPropagation(); navigate(`/projects/${project.id}/features`); }} className="text-white text-sm hover:text-blue-300 bg-zinc-700 p-1 px-2 rounded-md">Features</button>
                 </div>
               </div>
