@@ -10,11 +10,14 @@ const Create = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const membersInput = e.target[2].value.trim();
     const formData = {
       name: e.target[0].value,
       dueDate: e.target[3].value,
       description: e.target[4].value,
-      members: e.target[2].value.split(',').map(email => email.trim()),
+      members: membersInput
+        ? membersInput.split(',').map(email => email.trim()).filter(Boolean)
+        : [],
       userId: user.id,
       logo: logoUrl !== defaultLogo ? logoUrl : null
     };

@@ -92,7 +92,7 @@ const Project = () => {
     <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
       <div className="max-w-320 mx-auto">
         {project && (
-          <>
+          <div>
             <div className="flex w-full justify-between">
               <div className="flex items-center gap-4">
                 <div className="size-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
@@ -119,71 +119,92 @@ const Project = () => {
                 </div>
                 <div className="static text-zinc-400 mt-4 flex flex-col">
                   <span className="text-sm">Members</span>
-                  {project.member?.map((member,id) => (
-                      <div key={id} className="flex items-center gap-7 mt-1" >
-                        <div className="relative flex items-center mt-2">
-                          <BsPerson className="absolute size-3 left-1.5" />
-                          <BsFillPersonFill className="absolute size-3.5" />
-                        </div>
-                        <span className="text-white">{member}</span>
+                  {project.member?.map((member, id) => (
+                    <div key={id} className="flex items-center gap-7 mt-1" >
+                      <div className="relative flex items-center mt-2">
+                        <BsPerson className="absolute size-3 left-1.5" />
+                        <BsFillPersonFill className="absolute size-3.5" />
                       </div>
-                  ))}
-              </div>
-            </div>
-
-            <div className="p-6 bg-zinc-800 rounded-lg shadow-lg border-2 border-zinc-700 w-full">
-              <div className="flex justify-between">
-                <h4 className="text-xl font-bold text-white mb-4">Project Gallery</h4>
-                <div className="mb-4">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={isUploading}
-                    className="text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 cursor-pointer"
-                  />
-                  {isUploading && <span className="text-xs text-blue-400 ml-2">Uploading images...</span>}
-                </div>
-              </div>
-
-              {displayImages.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {displayImages.map((imgUrl, id) => (
-                    <div key={id} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-700">
-                      {/* <img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain hover:opacity-50" /> */}
-                      <Popup trigger={<img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain hover:object-cover hover:opacity-50 cursor-pointer transition duration-200" />}
-                        modal nested
-                      >
-                        {
-                          close => user ? (
-                            <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 ">
-                              <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10">
-                                <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>Close</button>
-                                <img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain" />
-
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="bg-zinc-800 p-6 rounded-lg text-white">
-                              <p>You do not have permission to view Images.</p>
-                              <button onClick={close} className="mt-4 bg-zinc-600 px-3 py-1 rounded">Close</button>
-                            </div>
-                          )}
-                      </Popup>
+                      <span className="text-white">{member}</span>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-zinc-500 text-sm">No images uploaded yet.</p>
-              )}
+              </div>
+
+              <div className="p-6 bg-zinc-800 rounded-lg shadow-lg border-2 border-zinc-700 w-full">
+                <div className="flex justify-between gap-4">
+                  <h4 className="text-xl font-bold text-white mb-4">Project Gallery</h4>
+                  {user?.role === "admin" ? (
+                    <div className="mb-4">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={isUploading}
+                        className="text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 cursor-pointer"
+                      />
+                      {isUploading ? (
+                        <span className="text-xs text-blue-400 ml-2">Updating gallery...</span>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+
+                {displayImages.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {displayImages.map((imgUrl, imageId) => (
+                      <div key={imageId} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-700">
+                        <Popup
+                          trigger={
+                            <img
+                              src={imgUrl}
+                              alt={`Gallery ${imageId}`}
+                              className="w-full h-full object-contain hover:object-cover hover:opacity-50 cursor-pointer transition duration-200"
+                            />
+                          }
+                          modal
+                          nested
+                        >
+                          {(close) => (
+                            <div className="h-full w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50">
+                              <div className="relative max-h-[90vh] my-auto mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10">
+                                <button
+                                  className="absolute -top-9 right-0 flex bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200"
+                                  onClick={close}
+                                >
+                                  <IoClose className="text-2xl" />
+                                  Close
+                                </button>
+                                <img src={imgUrl} alt={`Gallery ${imageId}`} className="w-full h-full object-contain" />
+                                {user?.role === "admin" ? (
+                                  <button
+                                    onClick={async () => {
+                                      await handleDeleteImage(imgUrl);
+                                      close();
+                                    }}
+                                    className="absolute -top-9 right-22 flex gap-1 items-center bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200"
+                                  >
+                                    <IoTrashOutline />
+                                    <span>Delete</span>
+                                  </button>
+                                ) : null}
+                              </div>
+                            </div>
+                          )}
+                        </Popup>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-zinc-500 text-sm">No images uploaded yet.</p>
+                )}
+              </div>
             </div>
           </div>
-      </>
-        )}
+        )};
+      </div>
     </div>
-    </div >
-  )
+  );
 }
-
-export default Project
+export default Project;

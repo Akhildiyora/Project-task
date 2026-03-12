@@ -38,24 +38,29 @@ app.post("/register", async (c) => {
   });
   const result = userSchema.safeParse({ name, email, password });
   if (!result.success) {
-    return c.json({ error: "Invalid input data", details: result.error.issues }, 400);
+    return c.json(
+      { error: "Invalid input data", details: result.error.issues },
+      400,
+    );
   }
   const user = await supabase
     .from("users")
     .select("*")
     .eq("email", email)
     .maybeSingle();
-    if (user.error){
-      console.error("Error fetching user:", user.error);
-      return c.json({ message: "Database error"}, 500);
-    }
+  if (user.error) {
+    console.error("Error fetching user:", user.error);
+    return c.json({ message: "Database error" }, 500);
+  }
   if (user.data) {
     return c.json({ message: "User already exists" }, 400);
   }
 
   const hash = await bcrypt.hash(password, 10);
 
-  const { data, error } = await supabase.from("users").insert({ name, email, password: hash, role: "user" });
+  const { data, error } = await supabase
+    .from("users")
+    .insert({ name, email, password: hash, role: "user" });
   console.log("INSERT RESULT", data);
   console.log("INSERT ERROR", error);
   if (error) {
@@ -91,7 +96,12 @@ app.post("/login", async (c) => {
     return c.json({ message: "Invalid credentials" }, 401);
   }
   const token = await sign(
-    { sub: user.id, email: user.email, role: user.role, exp: Math.floor(Date.now() / 1000) + 7200 },
+    {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      exp: Math.floor(Date.now() / 1000) + 7200,
+    },
     jwtSecret,
   );
 
@@ -106,69 +116,72 @@ app.post("/login", async (c) => {
   return c.json({
     message: "Login successful",
     token: token,
-    user: user
+    user: user,
   });
 });
 
-
 app.post("/google-login", async (c) => {
   try {
-  const { token } = await c.req.json();
-  if (!token) {
-    return c.json({ message: "Token is required" }, 400);
-  }
-  const ticket = await googleCient.verifyIdToken({
-    idToken: token,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  });
-  const payload = ticket.getPayload();
-  if(!payload || !payload.email) {
-    return c.json({ message: "Invalid google token payload" }, 401);
-  }
-  const { email, name, sub: googleId, email_verified } = payload;
-  if (!email || !email_verified) {
-    return c.json({ message: "Email is not verified" }, 401);
-  }
+    const { token } = await c.req.json();
+    if (!token) {
+      return c.json({ message: "Token is required" }, 400);
+    }
+    const ticket = await googleCient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return c.json({ message: "Invalid google token payload" }, 401);
+    }
+    const { email, name, sub: googleId, email_verified } = payload;
+    if (!email || !email_verified) {
+      return c.json({ message: "Email is not verified" }, 401);
+    }
 
-  let { data: user } = await supabase
-    .from("users")
-    .select("*")
-    .eq("email", email)
-    .maybeSingle();
-  if (!user) {
-    const { data: newUser, error: insertError } = await supabase
+    let { data: user } = await supabase
       .from("users")
-      .insert({ name, email, google_id: googleId, role: "user" })
       .select("*")
-      .single();
+      .eq("email", email)
+      .maybeSingle();
+    if (!user) {
+      const { data: newUser, error: insertError } = await supabase
+        .from("users")
+        .insert({ name, email, google_id: googleId, role: "user" })
+        .select("*")
+        .single();
       if (insertError || !newUser) {
         console.error("Error creating user:", insertError);
         return c.json({ message: "Error creating user" }, 500);
       }
-    user = newUser;
+      user = newUser;
+    }
+    const appToken = await sign(
+      {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+        exp: Math.floor(Date.now() / 1000) + 7200,
+      },
+      jwtSecret,
+    );
+
+    setCookie(c, "token", appToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7200,
+      path: "/",
+    });
+
+    return c.json({
+      message: "Google authentication successful",
+      user: user,
+    });
+  } catch (error) {
+    console.error("Google login error:", error);
+    return c.json({ message: "Google authentication failed" }, 500);
   }
-  const appToken = await sign(
-    { sub: user.id, email: user.email, role: user.role, exp: Math.floor(Date.now() / 1000) + 7200 },
-    jwtSecret,
-  );
-
-  setCookie(c, "token", appToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", 
-    sameSite: "strict",
-    maxAge: 7200,
-    path: "/",
-  });
-  
-  return c.json({
-    message: "Google authentication successful",
-    user: user
-  });
-
-} catch (error) {
-  console.error("Google login error:", error);
-  return c.json({ message: "Google authentication failed"}, 500);
-}
 });
 
 const authMiddleware = async (c: any, next: any) => {
@@ -185,7 +198,7 @@ const authMiddleware = async (c: any, next: any) => {
     return c.json({ error: "unauthorized" }, 401);
   }
   try {
-    const payload = await verify(token, jwtSecret, 'HS256' as any);
+    const payload = await verify(token, jwtSecret, "HS256" as any);
     c.set("jwtPayload", payload);
     await next();
   } catch (err) {
@@ -215,7 +228,7 @@ app.get("/dashboard", authMiddleware, async (c) => {
 });
 
 app.get("/logout", async (c) => {
-  deleteCookie(c, "token")
+  deleteCookie(c, "token");
   return c.json({ message: "Logged out successfully" });
 });
 
@@ -233,7 +246,7 @@ app.get("/me", async (c) => {
   }
 
   try {
-    const payload = await verify(token, jwtSecret, 'HS256' as any) as any;
+    const payload = (await verify(token, jwtSecret, "HS256" as any)) as any;
     const { data, error } = await supabase
       .from("users")
       .select("*")
@@ -252,11 +265,9 @@ app.get("/me", async (c) => {
 // Projects API
 app.get("/projects", authMiddleware, async (c) => {
   const user = c.get("jwtPayload");
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    // .eq("user_id", user.sub);
-  
+  const { data, error } = await supabase.from("projects").select("*");
+  // .eq("user_id", user.sub);
+
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
 });
@@ -270,7 +281,7 @@ app.get("/projects/:id", authMiddleware, async (c) => {
     .eq("id", id)
     // .eq("user_id", user.sub)
     .single();
-  
+
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
 });
@@ -283,7 +294,7 @@ app.get("/public/projects/:id", async (c) => {
     .select("*")
     .eq("id", id)
     .single();
-  
+
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
 });
@@ -291,16 +302,16 @@ app.get("/public/projects/:id", async (c) => {
 app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
   const user = c.get("jwtPayload");
   const { name, description, dueDate, members, logo } = await c.req.json();
-  
+
   const { data, error } = await supabase
     .from("projects")
-    .insert({ 
-      project_name: name, 
-      description, 
-      due_date: dueDate, 
+    .insert({
+      project_name: name,
+      description,
+      due_date: dueDate,
       user_id: user.sub,
       members: members,
-      images: logo
+      images: logo,
     })
     .select("*")
     .single();
@@ -313,7 +324,7 @@ app.post("/upload-images", authMiddleware, async (c) => {
   try {
     const body = await c.req.parseBody();
     const file = body["file"];
-    
+
     if (!file || typeof file === "string") {
       return c.json({ error: "No file uploaded" }, 400);
     }
@@ -351,7 +362,7 @@ app.post("/upload-images", authMiddleware, async (c) => {
 app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const updates = await c.req.json();
-  
+
   const { data, error } = await supabase
     .from("projects")
     .update(updates)
@@ -367,11 +378,9 @@ app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
 app.get("/features", authMiddleware, async (c) => {
   const user = c.get("jwtPayload");
   const projectId = c.req.query("projectId");
-  
-  let query = supabase
-    .from("features")
-    .select("*");
-    
+
+  let query = supabase.from("features").select("*");
+
   if (projectId) {
     query = query.eq("project_id", projectId);
   }
@@ -384,11 +393,9 @@ app.get("/features", authMiddleware, async (c) => {
 
 app.get("/public/features", async (c) => {
   const projectId = c.req.query("projectId");
-  
-  let query = supabase
-    .from("features")
-    .select("*");
-    
+
+  let query = supabase.from("features").select("*");
+
   if (projectId) {
     query = query.eq("project_id", projectId);
   }
@@ -402,7 +409,7 @@ app.get("/public/features", async (c) => {
 app.post("/features", authMiddleware, adminMiddleware, async (c) => {
   const user = c.get("jwtPayload");
   const feature = await c.req.json();
-  
+
   const { data, error } = await supabase
     .from("features")
     .insert({ ...feature })
@@ -416,7 +423,7 @@ app.post("/features", authMiddleware, adminMiddleware, async (c) => {
 app.patch("/features/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const updates = await c.req.json();
-  
+
   const { data, error } = await supabase
     .from("features")
     .update(updates)
@@ -430,10 +437,7 @@ app.patch("/features/:id", authMiddleware, adminMiddleware, async (c) => {
 
 app.delete("/features/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
-  const { error } = await supabase
-    .from("features")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from("features").delete().eq("id", id);
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json({ success: true });

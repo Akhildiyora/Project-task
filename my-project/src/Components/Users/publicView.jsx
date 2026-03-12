@@ -77,7 +77,7 @@ const PublicView = () => {
     return (
         <div className='min-h-screen bg-gradient-to-b from-zinc-900 from-80% to-zinc-600 text-zinc-100 font-sans selection:bg-blue-500/30 overflow-x-hidden'>
             <div className='max-w-320 mx-auto px-6 py-12'>
-                
+
                 <div className="mb-12 pb-8 border-b border-zinc-800/80">
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div>
@@ -117,7 +117,8 @@ const PublicView = () => {
                                         <img src={imgUrl} alt={`Gallery ${id}`} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-115" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-start p-4">
                                             <button onClick={() => window.open(imgUrl, '_blank')} className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white p-2 rounded-lg transition-colors border border-white/10" title="View full size">
-                                            <IoMdOpen /></button>
+                                                <IoMdOpen />
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
@@ -155,7 +156,7 @@ const PublicView = () => {
                                             <div key={item.id} className="bg-zinc-900 border border-zinc-800/80 p-4 rounded-xl shadow-sm hover:border-zinc-700 transition-colors">
                                                 <div className='flex items-start gap-3 mb-2'>
                                                     <div className="mt-0.5 shrink-0 text-emerald-500">
-                                                       <FaCheck /> 
+                                                        <FaCheck />
                                                     </div>
                                                     <div>
                                                         <h4 className='text-sm font-medium text-zinc-200'>{item.feature}</h4>

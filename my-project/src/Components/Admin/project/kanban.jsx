@@ -187,7 +187,7 @@ const Kanban = () => {
           <div className='flex items-center justify-between w-full px-20 gap-4'>
             <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-blue-200/80 to-blue-200/50'>{project?.project_name || "Loading..."}</h1>
 
-            <Popup onClose={() => setnewFeature(feature.length === 0)} trigger={<button className="bg-gradient-to-r from-green-600/50 to-green-400/80 text-white hover:text-zinc-900 px-4 py-2 rounded hover:from-green-300/70 hover:to-green-500 transition duration-200 cursor-pointer">Add New Feature</button>}
+            <Popup onClose={() => setnewFeature({ feature: "", desc: "", assign: "", due_date: "", status: "todo" })} trigger={<button className="bg-gradient-to-r from-green-600/50 to-green-400/80 text-white hover:text-zinc-900 px-4 py-2 rounded hover:from-green-300/70 hover:to-green-500 transition duration-200 cursor-pointer">Add New Feature</button>}
               modal nested
             >
               {
@@ -218,13 +218,13 @@ const Kanban = () => {
                             <div>
                               <label htmlFor="" className='px-2 text-zinc-400 text-sm'>Status</label>
                               <select value={activeColumn}
-                              onChange={(e) => setActiveColumn(e.target.value)}
-                              className="flex items-center justify-center px-1 py-1 text-white border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/20"
-                            >
-                              {Object.keys(columns).map((columnId) => (
-                                <option className='bg-gray-900 text-white' value={columnId} key={columnId}>{columns[columnId].name}</option>
-                              ))}
-                            </select>
+                                onChange={(e) => setActiveColumn(e.target.value)}
+                                className="flex items-center justify-center px-1 py-1 text-white border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/20"
+                              >
+                                {Object.keys(columns).map((columnId) => (
+                                  <option className='bg-gray-900 text-white' value={columnId} key={columnId}>{columns[columnId].name}</option>
+                                ))}
+                              </select>
                             </div>
                             <div>
                               <label className='px-2 text-zinc-400 text-sm' htmlFor="Assign">Assign To</label>
