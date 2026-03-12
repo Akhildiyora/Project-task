@@ -286,6 +286,34 @@ app.get("/projects/:id", authMiddleware, async (c) => {
   return c.json(data);
 });
 
+// app.delete("/projects/:id", authMiddleware, adminMiddleware, async(c) => {
+//   const id = c.req.param("id");
+//   const { data, error } = await supabase
+//   .from("projects")
+//   .select("logo")
+//   .eq("id", id)
+//   .single();
+
+//   if(error) {
+//     console.log("Fetch logo error")
+//   }
+//   console.log('logoData', data)
+//   const logo = data.logo
+//   // const { error: logoError } = await supabase.storage
+//   // .from("Images")
+//   // .remove()
+
+
+//   // const { error } = await supabase
+//   // .from("projects")
+//   // .delete()
+//   // .eq("id", id)
+//   // .single();
+
+//   // if (error) return c.json({ error: error.message }, 500);
+//   return c.json({ success: true });
+// })
+
 app.get("/public/projects/:id", async (c) => {
   const id = c.req.param("id");
   const user = c.get("jwtPayload");
@@ -359,6 +387,30 @@ app.post("/upload-images", authMiddleware, async (c) => {
   }
 });
 
+app.post("/delete-image", authMiddleware, async (c) => {
+  try {
+    const body = await c.req.json();
+    const url = body.url
+    const file = `Gallery/${url.split("/").pop().split("?")[0]}`
+    console.log(file)
+    
+    const { data: deleteData, error: deleteError } = await supabase.storage
+    .from("Images")
+    .remove([file])
+
+    if (deleteError) {
+      console.error("Storage signing error: ",deleteError);
+      return c.json({ error: "Failed to Delete image"}, 500)
+    }
+    
+    
+    return c.json({ url })
+  } catch (error) {
+    console.log("Delete handler error:", error)
+    return c.json({ error: "Internal server error"}, 500)
+  }
+})
+
 app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const updates = await c.req.json();
@@ -374,6 +426,21 @@ app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   return c.json(data);
 });
 
+app.post("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json();
+  const images = body.images
+
+  const { data, error } = await supabase
+    .from("projects")
+    .update({images})
+    .eq("id", id)
+    .select("images")
+
+  if (error) return c.json({ error: error.message }, 500);
+  console.log("image delete from database")
+  return c.json(data);
+});
 
 app.get("/features", authMiddleware, async (c) => {
   const user = c.get("jwtPayload");

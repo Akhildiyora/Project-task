@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react"
 import { useDataContext } from '../../../Context/DataContext';
 import { MdOutlineEdit, MdOutlineDateRange } from "react-icons/md";
@@ -6,12 +6,13 @@ import { BsPerson, BsFillPersonFill } from "react-icons/bs";
 import formatDateManually from "../../dateFormater";
 import Popup from 'reactjs-popup';
 import { useUserDataContext } from "../../../Context/UserDataContext";
-import { IoTrashOutline } from "react-icons/io5";
+import { IoTrashOutline, IoClose } from "react-icons/io5";
 
 const Project = () => {
   const { id } = useParams();
   const { user } = useUserDataContext();
   const { projects, setProjects } = useDataContext();
+  const navigate = useNavigate()
 
   const project = projects ? projects.find(p => p.id === parseInt(id)) : null;
 
@@ -88,6 +89,61 @@ const Project = () => {
     }
   };
 
+  const handleDeleteImage = async (imgUrl) => {
+    if (!imgUrl) return;
+    console.log(imgUrl)
+    const previousImages = displayImages;
+    const updatedImages = displayImages.filter(url => url !== imgUrl);
+
+    setProjects(prev => prev.map(p => p.id === parseInt(id) ? { ...p, images: updatedImages } : p))
+
+    try {
+      setIsUploading(true);
+      const deleteresponse = await fetch('http://localhost:3000/delete-image', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: imgUrl }),
+      });
+
+      if (!deleteresponse.ok) throw new Error('Delete failed');
+
+      const updateResponse = await fetch(`http://localhost:3000/projects/${id}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: ({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ images: updatedImages })
+      })
+
+      if (!updateResponse.ok) throw new Error('Failed to update project images after delete');
+
+
+    } catch (error) {
+      console.error("Delete error:", error);
+
+      setProjects(prev => prev.map(p => p.id === parseInt(id) ? { ...p, images: previousImages } : p));
+
+      alert("Failed to delete images.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  // const handleDeleteProject = async (id) => {
+  //   try {
+  //     const response = await fetch(`http://localhost:3000/projects/${id}`, {
+  //       method: 'POST',
+  //       credentials: 'include',
+  //       headers: { "Content-Type": "application/json" },
+  //     })
+
+  //     navigate("/projects")
+  //   } catch (error) {
+  //     console.error("Error removing feature:", error);
+  //     alert(error.message);
+  //   }
+  // }
+
   return (
     <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
       <div className="max-w-320 mx-auto">
@@ -103,7 +159,7 @@ const Project = () => {
               <div className="flex gap-3 items-center">
                 <Link to={`/projects/${project.id}/features`} className="text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 ">Features</Link>
                 <button className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
-                <button className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+                <button onClick={()=>handleDeleteProject(id)} className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
               </div>
             </div>
             <p className="text-zinc-300 mt-2">{project.description}</p>
@@ -154,13 +210,13 @@ const Project = () => {
                 {displayImages.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {displayImages.map((imgUrl, imageId) => (
-                      <div key={imageId} className="relative aspect-video rounded-lg overflow-hidden border border-zinc-700">
+                      <div key={imageId} className="group relative aspect-video rounded-xl overflow-hidden bg-zinc-800/50 border border-zinc-700/50 shadow-sm transition-all hover:border-zinc-500/70 hover:shadow-md">
                         <Popup
                           trigger={
                             <img
                               src={imgUrl}
                               alt={`Gallery ${imageId}`}
-                              className="w-full h-full object-contain hover:object-cover hover:opacity-50 cursor-pointer transition duration-200"
+                              className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-115"
                             />
                           }
                           modal
