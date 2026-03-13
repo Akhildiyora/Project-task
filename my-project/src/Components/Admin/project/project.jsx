@@ -109,7 +109,7 @@ const Project = () => {
       if (!deleteresponse.ok) throw new Error('Delete failed');
 
       const updateResponse = await fetch(`http://localhost:3000/projects/${id}`, {
-        method: 'POST',
+        method: 'PATCH',
         credentials: 'include',
         headers: ({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ images: updatedImages })
@@ -129,20 +129,23 @@ const Project = () => {
     }
   }
 
-  // const handleDeleteProject = async (id) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3000/projects/${id}`, {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //       headers: { "Content-Type": "application/json" },
-  //     })
-
-  //     navigate("/projects")
-  //   } catch (error) {
-  //     console.error("Error removing feature:", error);
-  //     alert(error.message);
-  //   }
-  // }
+  const handleDeleteProject = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3000/projects/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { "Content-Type": "application/json" },
+      })
+      console.log("response delete project",response)
+      if(response.ok){
+        setProjects((prev) => prev.filter((p) => p.id !== id))
+      }
+    } catch (error) {
+      console.error("Error removing feature:", error);
+      alert(error.message);
+    }
+    navigate("/projects")
+  }
 
   return (
     <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
@@ -159,7 +162,7 @@ const Project = () => {
               <div className="flex gap-3 items-center">
                 <Link to={`/projects/${project.id}/features`} className="text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 ">Features</Link>
                 <button className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
-                <button onClick={()=>handleDeleteProject(id)} className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+                <button onClick={()=>handleDeleteProject(project.id)} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
               </div>
             </div>
             <p className="text-zinc-300 mt-2">{project.description}</p>
@@ -258,7 +261,7 @@ const Project = () => {
               </div>
             </div>
           </div>
-        )};
+        )}
       </div>
     </div>
   );

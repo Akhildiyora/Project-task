@@ -100,7 +100,7 @@ app.post("/login", async (c) => {
       sub: user.id,
       email: user.email,
       role: user.role,
-      exp: Math.floor(Date.now() / 1000) + 7200,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 10,
     },
     jwtSecret,
   );
@@ -109,7 +109,7 @@ app.post("/login", async (c) => {
     httpOnly: true,
     secure: false,
     sameSite: "strict",
-    maxAge: 7200,
+    maxAge: 60 * 60 * 10,
     path: "/",
   });
 
@@ -161,7 +161,7 @@ app.post("/google-login", async (c) => {
         sub: user.id,
         email: user.email,
         role: user.role,
-        exp: Math.floor(Date.now() / 1000) + 7200,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 10,
       },
       jwtSecret,
     );
@@ -170,7 +170,7 @@ app.post("/google-login", async (c) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7200,
+      maxAge: 60 * 60 * 10,
       path: "/",
     });
 
@@ -208,7 +208,18 @@ const authMiddleware = async (c: any, next: any) => {
 
 const adminMiddleware = async (c: any, next: any) => {
   const payload = c.get("jwtPayload");
-  if (!payload || payload.role !== "admin") {
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", payload.sub)
+    .single();
+
+  if (error || !data) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  if (data.role !== "admin") {
     return c.json({ error: "Forbidden: Admin access required" }, 403);
   }
   await next();
@@ -232,7 +243,7 @@ app.get("/logout", async (c) => {
   return c.json({ message: "Logged out successfully" });
 });
 
-app.get("/me", async (c) => {
+app.get("/me", authMiddleware, async (c) => {
   let token = getCookie(c, "token");
   if (!token) {
     const authHeader = c.req.header("Authorization");
@@ -262,11 +273,12 @@ app.get("/me", async (c) => {
   }
 });
 
-// Projects API
 app.get("/projects", authMiddleware, async (c) => {
   const user = c.get("jwtPayload");
-  const { data, error } = await supabase.from("projects").select("*");
-  // .eq("user_id", user.sub);
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("user_id", user.sub);
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
@@ -275,44 +287,64 @@ app.get("/projects", authMiddleware, async (c) => {
 app.get("/projects/:id", authMiddleware, async (c) => {
   const id = c.req.param("id");
   const user = c.get("jwtPayload");
+  console.log("user.sub", user.sub);
   const { data, error } = await supabase
     .from("projects")
     .select("*")
     .eq("id", id)
-    // .eq("user_id", user.sub)
+    .eq("user_id", user.sub)
     .single();
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
 });
 
-// app.delete("/projects/:id", authMiddleware, adminMiddleware, async(c) => {
-//   const id = c.req.param("id");
-//   const { data, error } = await supabase
-//   .from("projects")
-//   .select("logo")
-//   .eq("id", id)
-//   .single();
+app.delete("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
+  const id = c.req.param("id");
+  const { data: projectData, error: fetchError } = await supabase
+    .from("projects")
+    .select("logo, images")
+    .eq("id", id)
+    .single();
 
-//   if(error) {
-//     console.log("Fetch logo error")
-//   }
-//   console.log('logoData', data)
-//   const logo = data.logo
-//   // const { error: logoError } = await supabase.storage
-//   // .from("Images")
-//   // .remove()
+  if (fetchError || !projectData) {
+    console.log("Fetch logo error");
+    return c.json({ error: "Project not found" }, 404);
+  }
 
+  console.log("projectData.images", projectData.images);
+  const filestoDelete = [];
 
-//   // const { error } = await supabase
-//   // .from("projects")
-//   // .delete()
-//   // .eq("id", id)
-//   // .single();
+  if (projectData.logo) {
+    const logo = `Logos/${projectData.logo.split("/").pop()?.split("?")[0]}`;
+    filestoDelete.push(logo);
+  }
 
-//   // if (error) return c.json({ error: error.message }, 500);
-//   return c.json({ success: true });
-// })
+  if (projectData.images) {
+    let images = projectData.images;
+    console.log('images.length', images.length)
+    images.forEach((img: string) => {
+      const Images = `Gallery/${img.split("/").pop()?.split("?")[0]}`;
+      filestoDelete.push(Images);
+      console.log("Images", Images);
+    });
+    if (projectData.images && images.length === 0) {
+      return c.json({ error: "Images parsing failed" }, 500);
+    }
+  }
+
+  if (filestoDelete.length > 0) {
+    console.log("filetoDelete", filestoDelete);
+    const { error: logoError } = await supabase.storage
+      .from("Images")
+      .remove(filestoDelete);
+  }
+
+  const { error } = await supabase.from("projects").delete().eq("id", id);
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json({ success: true });
+});
 
 app.get("/public/projects/:id", async (c) => {
   const id = c.req.param("id");
@@ -339,7 +371,7 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
       due_date: dueDate,
       user_id: user.sub,
       members: members,
-      images: logo,
+      logo: logo,
     })
     .select("*")
     .single();
@@ -357,7 +389,7 @@ app.post("/upload-images", authMiddleware, async (c) => {
       return c.json({ error: "No file uploaded" }, 400);
     }
 
-    const fileExt = file.name.split('.').pop();
+    const fileExt = file.name.split(".").pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `Gallery/${fileName}`;
 
@@ -370,7 +402,6 @@ app.post("/upload-images", authMiddleware, async (c) => {
       return c.json({ error: "Failed to upload to storage" }, 500);
     }
 
-    // Since the bucket isn't public, generate a signed URL valid for 1 year (31536000 seconds)
     const { data: signedData, error: signError } = await supabase.storage
       .from("Images")
       .createSignedUrl(filePath, 31536000);
@@ -387,29 +418,67 @@ app.post("/upload-images", authMiddleware, async (c) => {
   }
 });
 
+app.post("/upload-logo", authMiddleware, async (c) => {
+  try {
+    const body = await c.req.parseBody();
+    const logo = body["file"];
+    if (!logo || typeof logo === "string") {
+      return c.json({ error: "No logo uploaded" }, 400);
+    }
+
+    const logoExt = logo.name.split(".").pop();
+    const logoName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${logoExt}`;
+    const logoPath = `Logos/${logoName}`;
+
+    console.log("logoName", logoName);
+
+    const { data, error } = await supabase.storage
+      .from("Images")
+      .upload(logoPath, logo);
+
+    if (error) {
+      console.error("Storage upload error:", error);
+      return c.json({ error: "Failed to upload to storage" }, 500);
+    }
+
+    const { data: signedData, error: signError } = await supabase.storage
+      .from("Images")
+      .createSignedUrl(logoPath, 31536000);
+
+    if (signError || !signedData?.signedUrl) {
+      console.error("Storage signing error:", signError);
+      return c.json({ error: "Failed to generate signed URL" }, 500);
+    }
+
+    return c.json({ url: signedData.signedUrl });
+  } catch (error) {
+    console.error("Upload handler error:", error);
+    return c.json({ error: "Internal server error" }, 500);
+  }
+});
+
 app.post("/delete-image", authMiddleware, async (c) => {
   try {
     const body = await c.req.json();
-    const url = body.url
-    const file = `Gallery/${url.split("/").pop().split("?")[0]}`
-    console.log(file)
-    
+    const url = body.url;
+    const logo = `Gallery/${url.split("/").pop().split("?")[0]}`;
+    console.log(logo);
+
     const { data: deleteData, error: deleteError } = await supabase.storage
-    .from("Images")
-    .remove([file])
+      .from("Images")
+      .remove([logo]);
 
     if (deleteError) {
-      console.error("Storage signing error: ",deleteError);
-      return c.json({ error: "Failed to Delete image"}, 500)
+      console.error("Storage signing error: ", deleteError);
+      return c.json({ error: "Failed to Delete image" }, 500);
     }
-    
-    
-    return c.json({ url })
+
+    return c.json({ url });
   } catch (error) {
-    console.log("Delete handler error:", error)
-    return c.json({ error: "Internal server error"}, 500)
+    console.log("Delete handler error:", error);
+    return c.json({ error: "Internal server error" }, 500);
   }
-})
+});
 
 app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
@@ -426,19 +495,19 @@ app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   return c.json(data);
 });
 
-app.post("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
+app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const body = await c.req.json();
-  const images = body.images
+  const images = body.images;
 
   const { data, error } = await supabase
     .from("projects")
-    .update({images})
+    .update({ images })
     .eq("id", id)
-    .select("images")
+    .select("images");
 
   if (error) return c.json({ error: error.message }, 500);
-  console.log("image delete from database")
+  console.log("image delete from database");
   return c.json(data);
 });
 
