@@ -120,7 +120,6 @@ app.post("/login", async (c) => {
     // sameSite: "strict",
     maxAge: 60 * 60 * 10,
     path: "/",
-    domain: ".vercel.app"
   });
 
   return c.json({
@@ -184,7 +183,6 @@ app.post("/google-login", async (c) => {
       // sameSite: "strict",
       maxAge: 60 * 60 * 10,
       path: "/",
-      domain: ".vercel.app"
     });
 
     return c.json({
@@ -198,14 +196,8 @@ app.post("/google-login", async (c) => {
 });
 
 const authMiddleware = async (c: any, next: any) => {
-  let token = getCookie(c, "token");
-
-  if (!token) {
-    const authHeader = c.req.header("Authorization");
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.substring(7);
-    }
-  }
+  const token =
+    getCookie(c, "token") || c.req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     return c.json({ error: "unauthorized" }, 401);
