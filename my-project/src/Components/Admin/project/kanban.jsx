@@ -253,7 +253,7 @@ const Kanban = () => {
                           />
                         </div>
 
-                        <button type='submit' disabled={isSaving} className='border-t-2 py-1 border-black bg-gradient-to-r from-blue-500 to-blue-400 text-white font-medium hover:from-blue-400 hover:to-sky-500 transition-all duration-200 cursor-pointer'>{isSaving? "Saving..." : "Add Feature"}</button>
+                        <button type='submit' disabled={isSaving} className='border-t-2 py-1 border-black bg-gradient-to-r from-blue-500 to-blue-400 text-white font-medium hover:from-blue-400 hover:to-sky-500 transition-all duration-200 cursor-pointer'>{isSaving ? "Saving..." : "Add Feature"}</button>
                       </form>
                     </div>
                   </div>
@@ -316,7 +316,7 @@ const Kanban = () => {
                           />
                         </div>
 
-                        <button type='submit' disabled={isSaving} className='border-t-2 border-black bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-medium hover:from-yellow-500 hover:to-amber-500 transition-all duration-200 cursor-pointer py-1'>{isSaving? "Saving..." : "Save Changes"}</button>
+                        <button type='submit' disabled={isSaving} className='border-t-2 border-black bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-medium hover:from-yellow-500 hover:to-amber-500 transition-all duration-200 cursor-pointer py-1'>{isSaving ? "Saving..." : "Save Changes"}</button>
                       </form>
                     </div>
                   </div>

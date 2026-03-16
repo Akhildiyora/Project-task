@@ -49,6 +49,7 @@ app.post("/register", async (c) => {
     .select("*")
     .eq("email", email)
     .maybeSingle();
+
   if (user.error) {
     console.error("Error fetching user:", user.error);
     return c.json({ message: "Database error" }, 500);
@@ -63,6 +64,7 @@ app.post("/register", async (c) => {
     .from("users")
     .insert({ name, email, password: hash, role: "user" });
   console.log("INSERT RESULT", data);
+  
   console.log("INSERT ERROR", error);
   if (error) {
     return c.json({ message: "Error registering user", error }, 500);
