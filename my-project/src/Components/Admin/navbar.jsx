@@ -43,10 +43,10 @@ const Navbar = () => {
             trigger={
               <button className="flex items-center bg-gradient-to-r from-gray-700/80 via-zinc-700/70 to-gray-900/30 hover:from-gray-800/20 hover:to-gray-700/50 text-white font-bold py-2 px-4 rounded-md cursor-pointer gap-2"><div className='size-6 bg-gray-900 rounded-lg text-sm flex justify-center items-center'>A</div> {user.name}</button>
             }
-            position="bottom center"
+            position="bottom right"
             closeOnDocumentClick
           >
-            <div className='flex flex-col mt-2 right-2 border border-zinc-700/50 rounded-xl p-1 bg-zinc-800/50'>
+            <div className='flex flex-col mt-2 border border-zinc-700/50 rounded-xl p-1 bg-zinc-800/50 min-w-[220px] shadow-xl z-[100]'>
               <span className='text-zinc-400 px-4 py-1'>{user.email}</span>
               <button className='flex items-center gap-2 px-4 py-2 text-red-500 hover:text-red-400 border-t  mt-2 pt-2 border-zinc-700/50 w-full' onClick={handleLogout} ><FiLogOut />Logout</button>
             </div>
