@@ -23,7 +23,11 @@ const app = new Hono();
 
 app.use(
   "*",cors({
-    origin: [`${API}`],
+    // origin: [`${API}`],
+    // credentials: true,
+    origin: "https://project-task-manage.vercel.app",
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   }),
 );
