@@ -16,7 +16,7 @@ const Create = () => {
     const membersInput = e.target.members.value.trim();
     const formData = {
       name: e.target.name.value,
-      dueDate: e.target.dueDate.value,
+      due_date: e.target.due_date.value,
       description: e.target.description.value,
       members: membersInput
         ? membersInput.split(',').map(email => email.trim()).filter(Boolean)
@@ -115,7 +115,7 @@ const Create = () => {
             </div>
             <div>
               <label className="text-zinc-400 mb-2">Due Date</label>
-              <input name='dueDate' type="date" className="scheme-light-dark bg-zinc-800/30 text-white p-2 px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40 w-full" />
+              <input name='due_date' type="date" className="scheme-light-dark bg-zinc-800/30 text-white p-2 px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40 w-full" />
             </div>
             <div>
               <label className="text-zinc-400 mb-2">Description</label>

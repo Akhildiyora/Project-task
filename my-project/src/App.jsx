@@ -12,6 +12,7 @@ import Kanban from './Components/Admin/project/kanban'
 import Create from './Components/Admin/create'
 import ProtectedRoute from './Components/ProtectedRoute'
 import PublicView from './Components/Users/publicView'
+import Update from './Components/Admin/update'
 import { UserProvider } from './Context/UserDataContext'
 import { DataProvider } from './Context/DataContext'
 
@@ -54,6 +55,10 @@ function App() {
     {
       path: "/projects/:id",
       element: <><ProtectedRoute><Navbar /><Project /><Footer /></ProtectedRoute></>
+    },
+    {
+      path: "update/:id",
+      element: <><ProtectedRoute><Navbar /><Update /><Footer /></ProtectedRoute></>
     },
     {
       path: "/projects/:id/features",

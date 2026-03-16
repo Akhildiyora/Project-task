@@ -36,7 +36,7 @@ export const DataProvider = ({ children }) => {
         };
 
         fetchProjects();
-    }, [user, userLoading]);
+    }, [user, userLoading, dataLoading]);
 
     return (
         <DataContext.Provider value={{ projects, setProjects, setDataLoading, dataLoading }}>

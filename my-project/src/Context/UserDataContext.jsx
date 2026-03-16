@@ -9,7 +9,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:3000/me', { credentials: 'include' });
+        const response = await fetch('http://localhost:3000/users', { credentials: 'include' });
         if (response.ok) {
           const userData = await response.json();
           setUser(userData.user);

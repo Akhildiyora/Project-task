@@ -250,13 +250,13 @@ app.get("/public/projects/:id", async (c) => {
 });
 app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
     const user = c.get("jwtPayload");
-    const { name, description, dueDate, members } = await c.req.json();
+    const { name, description, due_date, members } = await c.req.json();
     const { data, error } = await supabase
         .from("projects")
         .insert({
         project_name: name,
         description,
-        due_date: dueDate,
+        due_date: due_date,
         user_id: user.sub,
         members: members
     })

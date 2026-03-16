@@ -243,7 +243,7 @@ app.get("/logout", async (c) => {
   return c.json({ message: "Logged out successfully" });
 });
 
-app.get("/me", authMiddleware, async (c) => {
+app.get("/users", authMiddleware, async (c) => {
   let token = getCookie(c, "token");
   if (!token) {
     const authHeader = c.req.header("Authorization");
@@ -361,14 +361,14 @@ app.get("/public/projects/:id", async (c) => {
 
 app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
   const user = c.get("jwtPayload");
-  const { name, description, dueDate, members, logo } = await c.req.json();
+  const { name, description, due_date, members, logo } = await c.req.json();
 
   const { data, error } = await supabase
     .from("projects")
     .insert({
       project_name: name,
       description,
-      due_date: dueDate,
+      due_date: due_date,
       user_id: user.sub,
       members: members,
       logo: logo,
@@ -380,7 +380,29 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
   return c.json(data, 201);
 });
 
-app.post("/upload-images", authMiddleware, async (c) => {
+app.patch("/update/:id", authMiddleware, adminMiddleware, async (c) => {
+  const user = c.get("jwtPayload");
+  const id = c.req.param("id");
+  const { description, due_date, members, logo } = await c.req.json();
+
+  const { data, error } = await supabase
+    .from("projects")
+    .update({
+      description,
+      due_date: due_date,
+      user_id: user.sub,
+      members: members,
+      logo: logo,
+    })
+    .select("*")
+    .eq('id',id)
+    .single();
+
+  if (error) return c.json({ error: error.message }, 500);
+  return c.json(data, 201);
+});
+
+app.post("/upload-images", authMiddleware, adminMiddleware, async (c) => {
   try {
     const body = await c.req.parseBody();
     const file = body["file"];
@@ -418,7 +440,7 @@ app.post("/upload-images", authMiddleware, async (c) => {
   }
 });
 
-app.post("/upload-logo", authMiddleware, async (c) => {
+app.post("/upload-logo", authMiddleware, adminMiddleware, async (c) => {
   try {
     const body = await c.req.parseBody();
     const logo = body["file"];
@@ -457,7 +479,7 @@ app.post("/upload-logo", authMiddleware, async (c) => {
   }
 });
 
-app.post("/delete-image", authMiddleware, async (c) => {
+app.post("/delete-image", authMiddleware, adminMiddleware, async (c) => {
   try {
     const body = await c.req.json();
     const url = body.url;
@@ -480,6 +502,7 @@ app.post("/delete-image", authMiddleware, async (c) => {
   }
 });
 
+//this is for update images in project
 app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const updates = await c.req.json();
@@ -495,7 +518,7 @@ app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   return c.json(data);
 });
 
-app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
+app.patch("/update-images/:id/", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const body = await c.req.json();
   const images = body.images;
