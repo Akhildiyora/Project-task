@@ -22,7 +22,7 @@ const API = process.env.FRONTEND_API
 const app = new Hono();
 
 app.use(
-  cors({
+  "*",cors({
     origin: [`${API}`],
     credentials: true,
   }),
@@ -110,10 +110,13 @@ app.post("/login", async (c) => {
 
   setCookie(c, "token", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "strict",
+    secure: true,
+    sameSite: "none",
+    // secure: false,
+    // sameSite: "strict",
     maxAge: 60 * 60 * 10,
     path: "/",
+    domain: ".vercel.app"
   });
 
   return c.json({
@@ -171,10 +174,13 @@ app.post("/google-login", async (c) => {
 
     setCookie(c, "token", appToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
+      // secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
       maxAge: 60 * 60 * 10,
       path: "/",
+      domain: ".vercel.app"
     });
 
     return c.json({
