@@ -6,10 +6,12 @@ import { FaRegEdit } from "react-icons/fa";
 import formatDateManually from '../../dateFormater';
 import { IoTrashOutline, IoAddCircleOutline } from "react-icons/io5";
 import { MdOutlineEdit } from "react-icons/md";
+const API = import.meta.env.VITE_BACKEND_API;
 
 const Kanban = () => {
   const { id: projectId } = useParams();
   const { user } = useUserDataContext();
+  const [isSaving, setIsSaving] = useState(false)
   const [columns, setColumns] = useState({
     todo: { name: "To Do", items: [] },
     inProgress: { name: "In Progress", items: [] },
@@ -26,7 +28,7 @@ const Kanban = () => {
 
   const fetchProject = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/projects/${projectId}`, { credentials: 'include' });
+      const response = await fetch(`${API}/projects/${projectId}`, { credentials: 'include' });
       const data = await response.json();
       setProject(data);
     } catch (error) {
@@ -36,7 +38,7 @@ const Kanban = () => {
 
   const fetchfeatures = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/features?projectId=${projectId}`, { credentials: 'include' });
+      const response = await fetch(`${API}/features?projectId=${projectId}`, { credentials: 'include' });
       if (!response.ok) {
         throw new Error(`Failed to fetch features: ${response.status}`);
       }
@@ -63,11 +65,12 @@ const Kanban = () => {
   const [activeColumn, setActiveColumn] = useState("todo")
   const [draggedItem, setDraggedItem] = useState(null)
 
-  const addnewFeature = async () => {
+  const addnewFeature = async (close) => {
+    setIsSaving(true)
     if (newFeature.feature.trim() === "") return;
 
     try {
-      const response = await fetch('http://localhost:3000/features', {
+      const response = await fetch(`${API}/features`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -76,10 +79,13 @@ const Kanban = () => {
       if (response.ok) {
         fetchfeatures();
         setnewFeature({ feature: "", desc: "", assign: "", due_date: "" });
+        close();
+        setIsSaving(false)
       }
     } catch (error) {
       console.error("Error adding feature:", error);
       alert(error.message);
+      setIsSaving(false)
     }
   }
 
@@ -95,7 +101,7 @@ const Kanban = () => {
 
   const removefeature = async (columnId, featureId) => {
     try {
-      await fetch(`http://localhost:3000/features/${featureId}`, {
+      await fetch(`${API}/features/${featureId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -108,11 +114,12 @@ const Kanban = () => {
 
   }
 
-  const submitEditFeature = async () => {
+  const submitEditFeature = async (close) => {
+    setIsSaving(true)
     if (!editFeatureData || editFeatureData.feature.trim() === "") return;
 
     try {
-      const response = await fetch(`http://localhost:3000/features/${editFeatureData.id}`, {
+      const response = await fetch(`${API}/features/${editFeatureData.id}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -127,12 +134,16 @@ const Kanban = () => {
       if (response.ok) {
         fetchfeatures();
         setEditFeatureData(null);
+        close();
+        setIsSaving(false)
       } else {
         alert("Failed to update feature");
+        setIsSaving(false)
       }
     } catch (error) {
       console.error("Error updating feature:", error);
       alert(error.message);
+      setIsSaving(false)
     }
   }
 
@@ -151,7 +162,7 @@ const Kanban = () => {
     if (sourceColumnId === columnId) return;
 
     try {
-      await fetch(`http://localhost:3000/features/${item.id}`, {
+      await fetch(`${API}/features/${item.id}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -195,7 +206,7 @@ const Kanban = () => {
                   <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 backdrop-blur-md">
                     <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10 border-t-4 border-blue-400">
                       <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>X</button>
-                      <form onSubmit={(e) => { e.preventDefault(); addnewFeature(); }} className="flex flex-col w-full ">
+                      <form onSubmit={(e) => { e.preventDefault(); addnewFeature(close); }} className="flex flex-col w-full ">
                         <div className="flex flex-col w-full rounded-t-md bg-transparent px-1 pt-2 pb-4 border border-zinc-700/30 hover:border-zinc-700">
                           <h2 className="text-xl font-bold text-white mb-4 px-3 flex items-center gap-2"><IoAddCircleOutline className='text-gray-400 ' />
                             Add Feature</h2>
@@ -242,7 +253,7 @@ const Kanban = () => {
                           />
                         </div>
 
-                        <button type='submit' className='border-t-2 py-1 border-black bg-gradient-to-r from-blue-500 to-blue-400 text-white font-medium hover:from-blue-400 hover:to-sky-500 transition-all duration-200 cursor-pointer'>Add Feature</button>
+                        <button type='submit' disabled={isSaving} className='border-t-2 py-1 border-black bg-gradient-to-r from-blue-500 to-blue-400 text-white font-medium hover:from-blue-400 hover:to-sky-500 transition-all duration-200 cursor-pointer'>{isSaving? "Saving..." : "Add Feature"}</button>
                       </form>
                     </div>
                   </div>
@@ -259,7 +270,7 @@ const Kanban = () => {
                   <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 backdrop-blur-md">
                     <div className="relative mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-800 to-yellow-600/10 border-t-4 border-yellow-600">
                       <button className="absolute -top-9 right-0 bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200 z-60" onClick={close}>X</button>
-                      <form onSubmit={(e) => { e.preventDefault(); submitEditFeature(); }} className="flex flex-col w-full ">
+                      <form onSubmit={(e) => { e.preventDefault(); submitEditFeature(close); }} className="flex flex-col w-full ">
                         <div className="flex flex-col w-full rounded-t-md bg-transparent px-1 pt-2 pb-4 border border-zinc-700/30 hover:border-zinc-700">
                           <div className="text-xl font-bold text-white mb-4 px-3 flex items-center gap-2">
                             <MdOutlineEdit className='text-gray-400 border border-zinc-700/90 rounded p-0.5' />
@@ -305,7 +316,7 @@ const Kanban = () => {
                           />
                         </div>
 
-                        <button type='submit' className='border-t-2 border-black bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-medium hover:from-yellow-500 hover:to-amber-500 transition-all duration-200 cursor-pointer py-1'>Save Changes</button>
+                        <button type='submit' disabled={isSaving} className='border-t-2 border-black bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-medium hover:from-yellow-500 hover:to-amber-500 transition-all duration-200 cursor-pointer py-1'>{isSaving? "Saving..." : "Save Changes"}</button>
                       </form>
                     </div>
                   </div>

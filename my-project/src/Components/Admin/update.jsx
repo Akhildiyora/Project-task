@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useUserDataContext } from '../../Context/UserDataContext';
 import defaultLogo from '/logo.jpg'
 import { useDataContext } from '../../Context/DataContext';
+const API=import.meta.env.VITE_BACKEND_API;
 
 const Create = () => {
     const navigate = useNavigate();
@@ -43,7 +44,7 @@ const Create = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:3000/projects/${id}`, {
+            const response = await fetch(`${API}/update/${id}`, {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -76,7 +77,7 @@ const Create = () => {
             formData.append('file', file);
             console.log(file)
 
-            const response = await fetch('http://localhost:3000/upload-logo', {
+            const response = await fetch(`${API}/upload-logo`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formData

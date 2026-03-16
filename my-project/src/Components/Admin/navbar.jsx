@@ -3,6 +3,7 @@ import { useUserDataContext } from '../../Context/UserDataContext';
 import Popup from 'reactjs-popup';
 import { AiOutlineProject } from "react-icons/ai";
 import { FiLogOut } from "react-icons/fi";
+const API=import.meta.env.VITE_BACKEND_API;
 
 const Navbar = () => {
   const { user, setUser } = useUserDataContext();
@@ -10,7 +11,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:3000/logout', {
+      await fetch(`${API}/logout`, {
         method: 'GET',
         credentials: 'include'
       });

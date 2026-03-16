@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useUserDataContext } from '../../Context/UserDataContext';
 import defaultLogo from '/logo.jpg'
 import { useDataContext } from '../../Context/DataContext';
+const API=import.meta.env.VITE_BACKEND_API;
 
 const Create = () => {
   const [logoUrl, setLogoUrl] = useState(defaultLogo)
   const { user } = useUserDataContext();
-  const { setDataLoading } = useDataContext();
+  const { setDataLoading, refetchProjects } = useDataContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -26,7 +27,7 @@ const Create = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/projects', {
+      const response = await fetch(`${API}/projects`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -34,6 +35,7 @@ const Create = () => {
       });
 
       if (response.ok) {
+        await refetchProjects();
         alert("Project created successfully!");
         navigate('/projects');
       } else {
@@ -59,7 +61,7 @@ const Create = () => {
       formData.append('file', file);
       console.log('form', formData)
 
-      const response = await fetch('http://localhost:3000/upload-logo', {
+      const response = await fetch(`${API}/upload-logo`, {
         method: 'POST',
         credentials: 'include',
         body: formData

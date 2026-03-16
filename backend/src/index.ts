@@ -18,11 +18,12 @@ if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined in environment variables");
 }
 const jwtSecret = process.env.JWT_SECRET!;
+const API = process.env.FRONTEND_API
 const app = new Hono();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [`${API}`],
     credentials: true,
   }),
 );

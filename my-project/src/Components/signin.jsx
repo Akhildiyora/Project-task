@@ -2,6 +2,8 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import GoogleLoginBtn from './googleLoginBtn';
 import { useUserDataContext } from '../Context/UserDataContext';
+const API=import.meta.env.VITE_BACKEND_API;
+
 
 const Signin = () => {
   const { setUser } = useUserDataContext();
@@ -11,7 +13,7 @@ const Signin = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch(`${API}/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {

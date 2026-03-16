@@ -19,7 +19,7 @@ const Status = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/projects`, { credentials: 'include' });
+      const response = await fetch(`${API}/projects`, { credentials: 'include' });
       if (!response.ok) {
         throw new Error(`Failed to fetch projects: ${response.status}`);
       }
@@ -52,7 +52,7 @@ const Status = () => {
     if (sourceColumnId === columnId) return;
 
     try {
-      await fetch(`http://localhost:3000/projects/${item.id}`, {
+      await fetch(`${API}/projects/${item.id}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

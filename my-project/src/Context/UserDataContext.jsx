@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+const API=import.meta.env.VITE_BACKEND_API;
 
 const UserContext = createContext();
 
@@ -9,7 +10,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:3000/users', { credentials: 'include' });
+        const response = await fetch(`${API}/users`, { credentials: 'include' });
         if (response.ok) {
           const userData = await response.json();
           setUser(userData.user);

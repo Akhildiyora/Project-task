@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useUserDataContext } from '../Context/UserDataContext';
+const API=import.meta.env.VITE_BACKEND_API;
 
 export default function GoogleLoginBtn() {
     const { setUser } = useUserDataContext();
@@ -9,7 +10,7 @@ export default function GoogleLoginBtn() {
 
     const handleGoogleResponse = useCallback(async (response) => {
         try {
-            const res = await fetch('http://localhost:3000/google-login', {
+            const res = await fetch(`${API}/google-login`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },

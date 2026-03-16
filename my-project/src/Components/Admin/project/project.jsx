@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useDataContext } from '../../../Context/DataContext';
 import { MdOutlineEdit, MdOutlineDateRange } from "react-icons/md";
 import { BsPerson, BsFillPersonFill } from "react-icons/bs";
@@ -7,16 +7,18 @@ import formatDateManually from "../../dateFormater";
 import Popup from 'reactjs-popup';
 import { useUserDataContext } from "../../../Context/UserDataContext";
 import { IoTrashOutline, IoClose } from "react-icons/io5";
+const API = import.meta.env.VITE_BACKEND_API;
 
 const Project = () => {
   const { id } = useParams();
+  const projectId = Number(id)
   const { user } = useUserDataContext();
-  const { projects, setProjects } = useDataContext();
+  const { projects, refetchProjects } = useDataContext();
   const navigate = useNavigate()
 
-  const project = projects ? projects.find(p => p.id === parseInt(id)) : null;
+  const project = projects?.find(p => p.id === projectId);
 
-  const displayImages = (() => {
+  const displayImages = useMemo(() => {
     if (!project || !project.images) return [];
 
     const extractUrls = (data) => {
@@ -27,7 +29,7 @@ const Project = () => {
             return extractUrls(parsed);
           }
           return [data];
-        } catch (e) {
+        } catch {
           return [data];
         }
       }
@@ -38,7 +40,7 @@ const Project = () => {
     };
 
     return extractUrls(project.images).filter(url => typeof url === 'string' && url.startsWith('http'));
-  })();
+  }, [project?.images]);
 
 
   const [isUploading, setIsUploading] = useState(false);
@@ -53,7 +55,7 @@ const Project = () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('http://localhost:3000/upload-images', {
+        const response = await fetch(`${API}/upload-images`, {
           method: 'POST',
           credentials: 'include',
           body: formData
@@ -68,7 +70,7 @@ const Project = () => {
 
       const updatedImages = [...displayImages, ...newImageUrls];
 
-      const updateResponse = await fetch(`http://localhost:3000/projects/${id}`, {
+      const updateResponse = await fetch(`${API}/projects/${id}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -77,9 +79,8 @@ const Project = () => {
 
       if (!updateResponse.ok) throw new Error('Failed to update project images');
 
-      if (setProjects) {
-        setProjects(prev => prev.map(p => p.id === parseInt(id) ? { ...p, images: updatedImages } : p));
-      }
+      await updateResponse.json();
+      await refetchProjects();
 
     } catch (error) {
       console.error("Upload error:", error);
@@ -95,11 +96,9 @@ const Project = () => {
     const previousImages = displayImages;
     const updatedImages = displayImages.filter(url => url !== imgUrl);
 
-    setProjects(prev => prev.map(p => p.id === parseInt(id) ? { ...p, images: updatedImages } : p))
-
     try {
       setIsUploading(true);
-      const deleteresponse = await fetch('http://localhost:3000/delete-image', {
+      const deleteresponse = await fetch(`${API}/delete-image`, {
         method: 'POST',
         credentials: 'include',
         headers: { "Content-Type": "application/json" },
@@ -108,21 +107,20 @@ const Project = () => {
 
       if (!deleteresponse.ok) throw new Error('Delete failed');
 
-      const updateResponse = await fetch(`http://localhost:3000/update-images/${id}`, {
+      const updateResponse = await fetch(`${API}/update-images/${id}`, {
         method: 'PATCH',
         credentials: 'include',
-        headers: ({ 'Content-Type': 'application/json' }),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ images: updatedImages })
       })
 
       if (!updateResponse.ok) throw new Error('Failed to update project images after delete');
 
+      await updateResponse.json();
+      await refetchProjects();
 
     } catch (error) {
       console.error("Delete error:", error);
-
-      setProjects(prev => prev.map(p => p.id === parseInt(id) ? { ...p, images: previousImages } : p));
-
       alert("Failed to delete images.");
     } finally {
       setIsUploading(false);
@@ -131,20 +129,28 @@ const Project = () => {
 
   const handleDeleteProject = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/update/${id}`, {
+      const response = await fetch(`${API}/projects/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: { "Content-Type": "application/json" },
       })
-      console.log("response delete project",response)
-      if(response.ok){
-        setProjects((prev) => prev.filter((p) => p.id !== id))
+      console.log("response delete project", response)
+      if (response.ok) {
+        await refetchProjects();
       }
     } catch (error) {
       console.error("Error removing feature:", error);
       alert(error.message);
     }
     navigate("/projects")
+  }
+
+  if (!project) {
+    return (
+      <div className="p-6 mt-18 text-white">
+        Loading project...
+      </div>
+    );
   }
 
   return (
@@ -161,8 +167,8 @@ const Project = () => {
               </div>
               <div className="flex gap-3 items-center">
                 <Link to={`/projects/${project.id}/features`} className="text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 ">Features</Link>
-                <button onClick={()=>navigate(`/update/${id}`)} className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
-                <button onClick={()=>handleDeleteProject(project.id)} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+                <button onClick={() => navigate(`/update/${id}`)} className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
+                <button onClick={() => handleDeleteProject(project.id)} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
               </div>
             </div>
             <p className="text-zinc-300 mt-2">{project.description}</p>
@@ -178,8 +184,8 @@ const Project = () => {
                 </div>
                 <div className="static text-zinc-400 mt-4 flex flex-col">
                   <span className="text-sm">Members</span>
-                  {project.member?.map((member, id) => (
-                    <div key={id} className="flex items-center gap-7 mt-1" >
+                  {project.member?.map((member, index) => (
+                    <div key={index} className="flex items-center gap-7 mt-1" >
                       <div className="relative flex items-center mt-2">
                         <BsPerson className="absolute size-3 left-1.5" />
                         <BsFillPersonFill className="absolute size-3.5" />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import GoogleLoginBtn from './googleLoginBtn';
+const API=import.meta.env.VITE_BACKEND_API;
 
 const Signup = () => {
 
@@ -26,7 +27,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/register', {
+      const response = await fetch(`${API}/register`, {
         method: 'POST',
         credentials: 'include',
         headers: {

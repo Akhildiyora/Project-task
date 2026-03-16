@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useUserDataContext } from '../../Context/UserDataContext';
 import { useDataContext } from '../../Context/DataContext';
 import { FaAngleRight } from "react-icons/fa6";
+const API=import.meta.env.VITE_BACKEND_API;
 
 const Dashboard = () => {
   const { user } = useUserDataContext();
@@ -12,7 +13,7 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        const response = await fetch('http://localhost:3000/dashboard', {
+        const response = await fetch(`${API}/dashboard`, {
           method: 'GET',
           credentials: 'include',
           headers: {

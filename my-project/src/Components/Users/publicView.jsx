@@ -21,7 +21,7 @@ const PublicView = () => {
 
     const fetchProject = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/public/projects/${projectId}`, { credentials: 'include' });
+            const response = await fetch(`${API}/public/projects/${projectId}`, { credentials: 'include' });
             const data = await response.json();
             setProject(data);
 
@@ -51,7 +51,7 @@ const PublicView = () => {
     };
     const fetchfeatures = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/public/features?projectId=${projectId}`, { credentials: 'include' });
+            const response = await fetch(`${API}/public/features?projectId=${projectId}`, { credentials: 'include' });
             if (!response.ok) {
                 throw new Error(`Failed to fetch features: ${response.status}`);
             }
