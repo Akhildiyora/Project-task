@@ -166,6 +166,7 @@ const Project = () => {
                 <h3 className="text-3xl font-bold text-white">{project.project_name}</h3>
               </div>
               <div className="flex gap-3 items-center">
+                <div className="text-white hover:text-green-400 px-3 text-sm border border-zinc-700 rounded-lg py-1">{project.status}</div>
                 <Link to={`/projects/${project.id}/features`} className="text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 ">Features</Link>
                 <button onClick={() => navigate(`/update/${id}`)} className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
                 <button onClick={() => handleDeleteProject(project.id)} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>

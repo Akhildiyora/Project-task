@@ -82,7 +82,7 @@ const Create = () => {
 
   return (
     <div>
-      <div className="p-6 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex flex-col items-center justify-center" >
+      <div className="p-6 pt-16 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex flex-col items-center justify-center" >
         <div className='bg-zinc-900/50 py-8 px-16 flex flex-col items-center justify-center'>
           <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-500 to-rose-400">Create New Project</h2>
           <span className='mb-8 text-sm text-zinc-400'>Set up a workspace for your next big idea.</span>
