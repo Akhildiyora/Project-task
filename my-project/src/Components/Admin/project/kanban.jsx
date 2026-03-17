@@ -229,10 +229,14 @@ const Kanban = () => {
                             </div>
                             <div>
                               <label className='px-2 text-zinc-400 text-sm' htmlFor="Assign">Assign To</label>
-                              <input type="text" value={newFeature.assign} placeholder='Email of Assign To...'
+                              <select type="text" value={newFeature.assign} placeholder='Email of Assign To...'
                                 className='flex-grow px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/20'
                                 onChange={(e) => setnewFeature({ ...newFeature, assign: e.target.value })}
-                              />
+                              >
+                                {project?.members?.map((member)=>(
+                                  <option key={member} value={member}>{member}</option>
+                                ))}
+                              </select>
                             </div>
                           </div>
                           <label className='px-3 py-1 mt-2 text-zinc-400 text-sm bg-transparent' htmlFor="Description">Description</label>

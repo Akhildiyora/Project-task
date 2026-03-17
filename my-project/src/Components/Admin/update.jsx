@@ -9,7 +9,7 @@ const Create = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { user } = useUserDataContext();
-    const { setDataLoading, projects } = useDataContext();
+    const { setDataLoading, projects, refetchProjects } = useDataContext();
     const project = projects?.find((p) => String(p.id) === id)
     const [logoUrl, setLogoUrl] = useState(defaultLogo)
     const [isUploading, setIsUploading] = useState(false);
@@ -55,6 +55,7 @@ const Create = () => {
             });
 
             if (response.ok) {
+                refetchProjects();
                 alert("Project updated successfully!");
                 navigate(`/projects/${id}`);
             } else {

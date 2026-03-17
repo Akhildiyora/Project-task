@@ -19,17 +19,6 @@ const Project = () => {
 
   const project = projects?.find(p => p.id === projectId);
 
-  if (!project) {
-    return (
-      <div className="p-6 mt-18 text-white">
-        Loading project...
-      </div>
-    );
-  }
-
-  const Members = project?.members
-  const displayMembers = Members.filter((m) => m !== user?.email)
-
   const displayImages = useMemo(() => {
     if (!project || !project.images) return [];
 
@@ -54,8 +43,18 @@ const Project = () => {
     return extractUrls(project.images).filter(url => typeof url === 'string' && url.startsWith('http'));
   }, [project?.images]);
 
+  if (!project) {
+    return (
+      <div className="p-6 mt-18 text-white">
+        Loading project...
+      </div>
+    );
+  }
 
   const [isUploading, setIsUploading] = useState(false);
+  const Members = project?.members
+  const displayMembers = Members.filter((m) => m !== user?.email)
+
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
