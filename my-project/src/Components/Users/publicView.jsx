@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { GrGallery } from "react-icons/gr";
 import { IoMdOpen } from "react-icons/io";
-import { FaCheck } from "react-icons/fa6"
+import { FaCheck } from "react-icons/fa6";
+const API = import.meta.env.VITE_BACKEND_API;
 
 const PublicView = () => {
     const { id: projectId } = useParams();

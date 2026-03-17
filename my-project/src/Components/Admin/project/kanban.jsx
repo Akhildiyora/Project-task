@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useUserDataContext } from '../../../Context/UserDataContext'
+import { useDataContext } from '../../../Context/DataContext';
 import Popup from 'reactjs-popup';
 import { FaRegEdit } from "react-icons/fa";
 import formatDateManually from '../../dateFormater';
@@ -11,6 +12,7 @@ const API = import.meta.env.VITE_BACKEND_API;
 const Kanban = () => {
   const { id: projectId } = useParams();
   const { user } = useUserDataContext();
+  const { projects, refetchProjects } = useDataContext();
   const [isSaving, setIsSaving] = useState(false)
   const [columns, setColumns] = useState({
     todo: { name: "To Do", items: [] },
@@ -21,21 +23,17 @@ const Kanban = () => {
 
   useEffect(() => {
     if (projectId) {
-      fetchProject();
+
+      refetchProjects();
       fetchfeatures();
+      console.log('project', project)
     }
   }, [projectId]);
 
-  const fetchProject = async () => {
-    try {
-      const response = await fetch(`${API}/projects/${projectId}`, { credentials: 'include' });
-      const data = await response.json();
-      setProject(data);
-    } catch (error) {
-      console.error("Error fetching project:", error);
-    }
-  };
-
+  useEffect(() => {
+    setProject(projects.find((p) => p.id === projectId))
+  }, [projectId, projects]);
+  
   const fetchfeatures = async () => {
     try {
       const response = await fetch(`${API}/features?projectId=${projectId}`, { credentials: 'include' });

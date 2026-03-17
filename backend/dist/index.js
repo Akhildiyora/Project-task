@@ -16,8 +16,14 @@ if (!process.env.JWT_SECRET) {
 const jwtSecret = process.env.JWT_SECRET;
 const API = process.env.FRONTEND_API;
 const app = new Hono();
-app.use(cors({
-    origin: [`${API}`],
+app.use("*", cors({
+    // for local
+    //   origin: [`${API}`],
+    //   credentials: true,
+    // for vercel {all four}
+    origin: "https://project-task-manage.vercel.app",
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
 }));
 app.get("/", (c) => c.text("working"));
@@ -86,8 +92,12 @@ app.post("/login", async (c) => {
     }, jwtSecret);
     setCookie(c, "token", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        // for vercel
+        secure: true,
+        sameSite: "none",
+        // for local
+        // secure: false,
+        // sameSite: "strict",
         maxAge: 60 * 60 * 10,
         path: "/",
     });
@@ -140,8 +150,12 @@ app.post("/google-login", async (c) => {
         }, jwtSecret);
         setCookie(c, "token", appToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+            // for vercel
+            secure: true,
+            sameSite: "none",
+            // for local
+            // secure: process.env.NODE_ENV === "production",
+            // sameSite: "strict",
             maxAge: 60 * 60 * 10,
             path: "/",
         });
@@ -156,13 +170,7 @@ app.post("/google-login", async (c) => {
     }
 });
 const authMiddleware = async (c, next) => {
-    let token = getCookie(c, "token");
-    if (!token) {
-        const authHeader = c.req.header("Authorization");
-        if (authHeader && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-        }
-    }
+    const token = getCookie(c, "token") || c.req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
         return c.json({ error: "unauthorized" }, 401);
     }

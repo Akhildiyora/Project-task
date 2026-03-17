@@ -26,11 +26,11 @@ app.use(
 
   // for local
 
-  //   origin: [`${API}`],
-  //   credentials: true,
+    // origin: [`${API}`],
+    // credentials: true,
   
   // for vercel {all four}
-  
+
     origin: "https://project-task-manage.vercel.app",
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -130,6 +130,7 @@ app.post("/login", async (c) => {
 
     // secure: false,
     // sameSite: "strict",
+
     maxAge: 60 * 60 * 10,
     path: "/",
   });
@@ -199,6 +200,7 @@ app.post("/google-login", async (c) => {
 
       // secure: process.env.NODE_ENV === "production",
       // sameSite: "strict",
+
       maxAge: 60 * 60 * 10,
       path: "/",
     });

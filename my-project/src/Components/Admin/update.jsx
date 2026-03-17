@@ -14,20 +14,20 @@ const Create = () => {
     const [logoUrl, setLogoUrl] = useState(defaultLogo)
     const [isUploading, setIsUploading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    if (!project) {
-        return (
-            <div className="text-zinc-400 min-h-screen flex items-center justify-center text-lg ">
-                Loading project...
-            </div>
-        )
-    }
-
+    
     useEffect(() => {
         if (project?.logo) {
             setLogoUrl(project.logo)
         }
     }, [project?.logo])
+    
+        if (!project) {
+            return (
+                <div className="text-zinc-400 min-h-screen flex items-center justify-center text-lg ">
+                    Loading project...
+                </div>
+            )
+        }
 
 
     const handleSubmit = async (e) => {
