@@ -92,6 +92,7 @@ const Project = () => {
   };
 
   const handleDeleteImage = async (imgUrl) => {
+    confirm("Sure!, You want to delete this Image?")
     if (!imgUrl) return;
     console.log(imgUrl)
     const previousImages = displayImages;
@@ -129,6 +130,7 @@ const Project = () => {
   }
 
   const handleDeleteProject = async (id) => {
+    confirm("Sure!, You want to delete this Project?")
     try {
       const response = await fetch(`${API}/projects/${id}`, {
         method: 'DELETE',

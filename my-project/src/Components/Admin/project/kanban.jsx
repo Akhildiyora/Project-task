@@ -98,6 +98,7 @@ const Kanban = () => {
   })
 
   const removefeature = async (columnId, featureId) => {
+    confirm("Sure!, You want to delete this Feature?")
     try {
       await fetch(`${API}/features/${featureId}`, {
         method: 'DELETE',
