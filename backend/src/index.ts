@@ -305,9 +305,12 @@ app.get("/projects", authMiddleware, async (c) => {
   const { data, error } = await supabase
     .from("projects")
     .select("*")
-    .eq("user_id", user.sub);
+    .or(`user_id.eq.${user.sub},members.cs.{${user.email.toLowerCase()}}`);
 
-  if (error) return c.json({ error: error.message }, 500);
+  if (error){ 
+    console.error("PROJECT FETCH ERROR:", error);
+    return c.json({ error: error.message }, 500);
+  };
   return c.json(data);
 });
 

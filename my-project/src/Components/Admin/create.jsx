@@ -21,9 +21,9 @@ const Create = () => {
       name: e.target.name.value,
       due_date: e.target.due_date.value,
       description: e.target.description.value,
-      members: membersInput
+      members: (membersInput
         ? membersInput.split(',').map(email => email.trim()).filter(Boolean)
-        : [],
+        : []).push(user.email),
       userId: user.id,
       logo: logoUrl !== defaultLogo ? logoUrl : null
     };

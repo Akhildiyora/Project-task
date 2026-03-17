@@ -31,7 +31,7 @@ const Kanban = () => {
   }, [projectId]);
 
   useEffect(() => {
-    setProject(projects.find((p) => p.id === projectId))
+    setProject(projects.find((p) => p.id === Number(projectId)))
   }, [projectId, projects]);
 
   const fetchfeatures = async () => {
