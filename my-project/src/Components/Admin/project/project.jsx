@@ -92,60 +92,67 @@ const Project = () => {
   };
 
   const handleDeleteImage = async (imgUrl) => {
-    confirm("Sure!, You want to delete this Image?")
-    if (!imgUrl) return;
-    console.log(imgUrl)
-    const previousImages = displayImages;
-    const updatedImages = displayImages.filter(url => url !== imgUrl);
+    if (confirm("Sure!, You want to delete this Image?")) {
+      if (!imgUrl) return;
+      console.log(imgUrl)
+      const previousImages = displayImages;
+      const updatedImages = displayImages.filter(url => url !== imgUrl);
 
-    try {
-      setIsUploading(true);
-      const deleteresponse = await fetch(`${API}/delete-image`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: imgUrl }),
-      });
+      try {
+        setIsUploading(true);
+        const deleteresponse = await fetch(`${API}/delete-image`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: imgUrl }),
+        });
 
-      if (!deleteresponse.ok) throw new Error('Delete failed');
+        if (!deleteresponse.ok) throw new Error('Delete failed');
 
-      const updateResponse = await fetch(`${API}/update-images/${id}`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ images: updatedImages })
-      })
+        const updateResponse = await fetch(`${API}/update-images/${id}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ images: updatedImages })
+        })
 
-      if (!updateResponse.ok) throw new Error('Failed to update project images after delete');
+        if (!updateResponse.ok) throw new Error('Failed to update project images after delete');
 
-      await updateResponse.json();
-      await refetchProjects();
+        await updateResponse.json();
+        await refetchProjects();
 
-    } catch (error) {
-      console.error("Delete error:", error);
-      alert("Failed to delete images.");
-    } finally {
-      setIsUploading(false);
+      } catch (error) {
+        console.error("Delete error:", error);
+        alert("Failed to delete images.");
+      } finally {
+        setIsUploading(false);
+      }
+    }
+    else {
+      return;
     }
   }
 
   const handleDeleteProject = async (id) => {
-    confirm("Sure!, You want to delete this Project?")
-    try {
-      const response = await fetch(`${API}/projects/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { "Content-Type": "application/json" },
-      })
-      console.log("response delete project", response)
-      if (response.ok) {
-        await refetchProjects();
+    if (confirm("Sure!, You want to delete this Project?")) {
+      try {
+        const response = await fetch(`${API}/projects/${id}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: { "Content-Type": "application/json" },
+        })
+        console.log("response delete project", response)
+        if (response.ok) {
+          await refetchProjects();
+        }
+      } catch (error) {
+        console.error("Error removing feature:", error);
+        alert(error.message);
       }
-    } catch (error) {
-      console.error("Error removing feature:", error);
-      alert(error.message);
+      navigate("/projects")
+    } else {
+      return;
     }
-    navigate("/projects")
   }
 
   if (!project) {

@@ -33,7 +33,7 @@ const Kanban = () => {
   useEffect(() => {
     setProject(projects.find((p) => p.id === projectId))
   }, [projectId, projects]);
-  
+
   const fetchfeatures = async () => {
     try {
       const response = await fetch(`${API}/features?projectId=${projectId}`, { credentials: 'include' });
@@ -98,19 +98,21 @@ const Kanban = () => {
   })
 
   const removefeature = async (columnId, featureId) => {
-    confirm("Sure!, You want to delete this Feature?")
-    try {
-      await fetch(`${API}/features/${featureId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      fetchfeatures();
+    if (confirm("Sure!, You want to delete this Feature?")) {
+      try {
+        await fetch(`${API}/features/${featureId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        fetchfeatures();
 
-    } catch (error) {
-      console.error("Error removing feature:", error);
-      alert(error.message);
+      } catch (error) {
+        console.error("Error removing feature:", error);
+        alert(error.message);
+      }
+    } else {
+      return;
     }
-
   }
 
   const submitEditFeature = async (close) => {
