@@ -87,32 +87,21 @@ const Kanban = () => {
     }
   }
 
-  const permitRemove = ((columnId, featrueid) => {
-    if (confirm("Are You Sure to Delete This Feature!")) {
-      removefeature(columnId, featrueid);
-    } else {
-      return;
-    }
-
-    return;
-  })
-
   const removefeature = async (columnId, featureId) => {
-    if (confirm("Sure!, You want to delete this Feature?")) {
-      try {
-        await fetch(`${API}/features/${featureId}`, {
-          method: 'DELETE',
-          credentials: 'include'
-        });
-        fetchfeatures();
+    const confirmed = window.confirm("Sure!, You want to delete this Feature?")
+    if (!confirmed) return
+    try {
+      await fetch(`${API}/features/${featureId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      fetchfeatures();
 
-      } catch (error) {
-        console.error("Error removing feature:", error);
-        alert(error.message);
-      }
-    } else {
-      return;
+    } catch (error) {
+      console.error("Error removing feature:", error);
+      alert(error.message);
     }
+
   }
 
   const submitEditFeature = async (close) => {
@@ -350,7 +339,7 @@ const Kanban = () => {
                               <div className='flex items-center justify-center '>
                                 <button onClick={() => setEditFeatureData(item)} className='text-zinc-400 hover:text-blue-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
                                   <span className='text-lg cursor-pointer '><FaRegEdit className='size-3' /></span>
-                                </button><button onClick={() => permitRemove(columnId, item.id)} className='text-zinc-400 hover:text-red-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
+                                </button><button onClick={() => removefeature(columnId, item.id)} className='text-zinc-400 hover:text-red-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
                                   <span className='text-md cursor-pointer'><IoTrashOutline className='size-3.5' /></span>
                                 </button>
                               </div>
