@@ -105,7 +105,7 @@ const Create = () => {
                   type='file'
                   accept="image/*"
                   onChange={(e) => handleUpload(e)}
-                  disabled={isUploading}
+                  disabled={isUploading || user?.role !== 'admin'}
                   className='text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-zinc-700/50 hover:file:border-zinc-700 file:text-sm file:font-semibold file:bg-zinc-900/50 file:text-zinc-400 hover:file:bg-zinc-900 file:cursor-pointer'
                 />
                 {isUploading && <span className="text-xs text-zinc-400">Uploading...</span>}
@@ -126,7 +126,7 @@ const Create = () => {
               <label className="text-zinc-400 mb-2">Description</label>
               <textarea name='description' placeholder="Enter project description" className="bg-zinc-800/30 text-white p-2 px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40  w-full"></textarea>
             </div>
-            <button type="submit" disabled={IsSubmit} className="bg-gradient-to-r from-blue-600/50 via-violet-400 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200">{IsSubmit?"Creating Project..." : "Create Project"}</button>
+            <button type="submit" disabled={IsSubmit || user?.role !== 'admin'} className="bg-gradient-to-r from-blue-600/50 via-violet-400 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200">{IsSubmit?"Creating Project..." : "Create Project"}</button>
           </form>
         </div>
       </div>

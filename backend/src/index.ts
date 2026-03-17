@@ -18,7 +18,7 @@ if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined in environment variables");
 }
 const jwtSecret = process.env.JWT_SECRET!;
-const API = process.env.FRONTEND_API
+const API = process.env.FRONTEND_API;
 const app = new Hono();
 
 app.use(
@@ -74,7 +74,7 @@ app.post("/register", async (c) => {
     .from("users")
     .insert({ name, email, password: hash, role: "user" });
   console.log("INSERT RESULT", data);
-  
+
   console.log("INSERT ERROR", error);
   if (error) {
     return c.json({ message: "Error registering user", error }, 500);
@@ -166,6 +166,7 @@ app.post("/google-login", async (c) => {
       .select("*")
       .eq("email", email)
       .maybeSingle();
+
     if (!user) {
       const { data: newUser, error: insertError } = await supabase
         .from("users")
@@ -217,7 +218,8 @@ app.post("/google-login", async (c) => {
 
 const authMiddleware = async (c: any, next: any) => {
   const token =
-    getCookie(c, "token") || c.req.header("Authorization")?.replace("Bearer ", "");
+    getCookie(c, "token") ||
+    c.req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     return c.json({ error: "unauthorized" }, 401);
@@ -347,7 +349,7 @@ app.delete("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
 
   if (projectData.images) {
     let images = projectData.images;
-    console.log('images.length', images.length)
+    console.log("images.length", images.length);
     images.forEach((img: string) => {
       const Images = `Gallery/${img.split("/").pop()?.split("?")[0]}`;
       filestoDelete.push(Images);
@@ -420,7 +422,7 @@ app.patch("/update/:id", authMiddleware, adminMiddleware, async (c) => {
       logo: logo,
     })
     .select("*")
-    .eq('id',id)
+    .eq("id", id)
     .single();
 
   if (error) return c.json({ error: error.message }, 500);

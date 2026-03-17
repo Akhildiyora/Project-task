@@ -49,8 +49,8 @@ const Projects = () => {
                 <div className='flex justify-between items-center'>
                   <h3 className="text-xl font-semibold ">{project.project_name}</h3>
                   <div className='flex items-center '>
-                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={() => {e.stopPropagation(); CopyUrl(project.id);}}>{copiedId === project.id ? <TbCopyCheckFilled /> : <TbCopy />}</button>
-                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={() => {e.stopPropagation(); window.open(`${FAPI}/projects/${project.id}`, '_blank');}}><IoMdOpen /></button>
+                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={(e) => {e.stopPropagation(); CopyUrl(project.id);}}>{copiedId === project.id ? <TbCopyCheckFilled /> : <TbCopy />}</button>
+                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={(e) => {e.stopPropagation(); window.open(`${FAPI}/projects/${project.id}`, '_blank');}}><IoMdOpen /></button>
                   </div>
                 </div>
                 <p className="text-zinc-400 text-sm mt-1 mb-4">{project.description}</p>
