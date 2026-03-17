@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUserDataContext } from '../../Context/UserDataContext';
 import defaultLogo from '/logo.jpg'
 import { useDataContext } from '../../Context/DataContext';
-const API=import.meta.env.VITE_BACKEND_API;
+const API = import.meta.env.VITE_BACKEND_API;
 
 const Create = () => {
   const [logoUrl, setLogoUrl] = useState(defaultLogo)
@@ -17,13 +17,19 @@ const Create = () => {
     setIsSubmit(true)
     setDataLoading(true)
     const membersInput = e.target.members.value.trim();
+    const member = membersInput
+      ? membersInput.split(',').map(email => email.trim()).filter(Boolean)
+      : []
+
+    if (!member.includes(user.email.toLowerCase())) {
+      member.push(user.email)
+    }
+
     const formData = {
       name: e.target.name.value,
       due_date: e.target.due_date.value,
       description: e.target.description.value,
-      members: (membersInput
-        ? membersInput.split(',').map(email => email.trim()).filter(Boolean)
-        : []).push(user.email),
+      members: member,
       userId: user.id,
       logo: logoUrl !== defaultLogo ? logoUrl : null
     };
@@ -126,7 +132,7 @@ const Create = () => {
               <label className="text-zinc-400 mb-2">Description</label>
               <textarea name='description' placeholder="Enter project description" className="bg-zinc-800/30 text-white p-2 px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40  w-full"></textarea>
             </div>
-            <button type="submit" disabled={IsSubmit || user?.role !== 'admin'} className="bg-gradient-to-r from-blue-600/50 via-violet-400 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200">{IsSubmit?"Creating Project..." : "Create Project"}</button>
+            <button type="submit" disabled={IsSubmit || user?.role !== 'admin'} className="bg-gradient-to-r from-blue-600/50 via-violet-400 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200">{IsSubmit ? "Creating Project..." : "Create Project"}</button>
           </form>
         </div>
       </div>

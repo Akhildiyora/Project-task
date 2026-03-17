@@ -391,7 +391,11 @@ app.get("/public/projects/:id", async (c) => {
 
 app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
   const user = c.get("jwtPayload");
-  const { name, description, due_date, members, logo } = await c.req.json();
+  const body = await c.req.json();
+
+  console.log("REQUEST BODY:", body);
+
+  const { name, description, due_date, members, logo } = body
 
   const { data, error } = await supabase
     .from("projects")
@@ -406,7 +410,10 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
     .select("*")
     .single();
 
-  if (error) return c.json({ error: error.message }, 500);
+  if (error) {
+    console.error("INSERT ERROR:", error);
+    return c.json({ error: error.message }, 500);
+  }
   return c.json(data, 201);
 });
 

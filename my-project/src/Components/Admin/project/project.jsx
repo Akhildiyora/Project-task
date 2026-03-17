@@ -19,6 +19,17 @@ const Project = () => {
 
   const project = projects?.find(p => p.id === projectId);
 
+  if (!project) {
+    return (
+      <div className="p-6 mt-18 text-white">
+        Loading project...
+      </div>
+    );
+  }
+
+  const Members = project?.members
+  const displayMembers = Members.filter((m) => m !== user?.email)
+
   const displayImages = useMemo(() => {
     if (!project || !project.images) return [];
 
@@ -151,13 +162,6 @@ const Project = () => {
     navigate("/projects")
   }
 
-  if (!project) {
-    return (
-      <div className="p-6 mt-18 text-white">
-        Loading project...
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
@@ -195,7 +199,7 @@ const Project = () => {
                 </div>
                 <div className="static text-zinc-400 mt-4 flex flex-col">
                   <span className="text-sm">Members</span>
-                  {project.member?.map((member, index) => (
+                  {displayMembers?.map((member, index) => (
                     <div key={index} className="flex items-center gap-7 mt-1" >
                       <div className="relative flex items-center mt-2">
                         <BsPerson className="absolute size-3 left-1.5" />
