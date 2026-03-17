@@ -13,6 +13,7 @@ import Create from './Components/Admin/create'
 import ProtectedRoute from './Components/ProtectedRoute'
 import PublicView from './Components/Users/publicView'
 import Update from './Components/Admin/update'
+import RootLayout from './Components/rootLayout'
 import { UserProvider } from './Context/UserDataContext'
 import { DataProvider } from './Context/DataContext'
 
@@ -21,56 +22,61 @@ function App() {
 
   let router = createBrowserRouter([
     {
-      path: "/public/projects/:id/features",
-      element: <><Header /><PublicView /><Footer /></>      
-    },
-    {
-      path: "/",
-      element: <><Header /><Signin /></>
-    },
-    {
-      path: "/login",
-      element: <><Header /><Signin /></>
-    },
-    {
-      path: "/register",
-      element: <><Header /><Signup /></>
-    },
-    {
-      path: "/dashboard",
-      element: <><ProtectedRoute><Navbar /><Dashboard /><Footer /></ProtectedRoute></>
-    },
-    {
-      path: "/projects/create",
-      element: <><ProtectedRoute requiredRole="admin"><Navbar /><Create /><Footer /></ProtectedRoute></>
-    },
-    {
-      path: "/projects",
-      element: <><ProtectedRoute><Navbar /><Projects /><Footer /></ProtectedRoute></>
-    },
-    {
-      path: "/status",
-      element: <><ProtectedRoute><Navbar /><Status /><Footer /></ProtectedRoute></>
-    },
-    {
-      path: "/projects/:id",
-      element: <><ProtectedRoute><Navbar /><Project /><Footer /></ProtectedRoute></>
-    },
-    {
-      path: "update/:id",
-      element: <><ProtectedRoute><Navbar /><Update /><Footer /></ProtectedRoute></>
-    },
-    {
-      path: "/projects/:id/features",
-      element: <><ProtectedRoute><Navbar /><Kanban /><Footer /></ProtectedRoute></>
-    },
-    {
-      path: "*",
-      element: <div className="h-screen bg-zinc-900 flex items-center justify-center text-white flex-col">
-        <h1 className="text-4xl font-bold">404</h1>
-        <p>Page Not Found</p>
-        <Link to="/" className="text-blue-400 mt-4 underline">Go Home</Link>
-      </div>
+      element: <RootLayout />,
+      children: [
+        {
+          path: "/public/projects/:id/features",
+          element: <><Header /><PublicView /><Footer /></>
+        },
+        {
+          path: "/",
+          element: <><Header /><Signin /></>
+        },
+        {
+          path: "/login",
+          element: <><Header /><Signin /></>
+        },
+        {
+          path: "/register",
+          element: <><Header /><Signup /></>
+        },
+        {
+          path: "/dashboard",
+          element: <><ProtectedRoute><Navbar /><Dashboard /><Footer /></ProtectedRoute></>
+        },
+        {
+          path: "/projects/create",
+          element: <><ProtectedRoute requiredRole="admin"><Navbar /><Create /><Footer /></ProtectedRoute></>
+        },
+        {
+          path: "/projects",
+          element: <><ProtectedRoute><Navbar /><Projects /><Footer /></ProtectedRoute></>
+        },
+        {
+          path: "/status",
+          element: <><ProtectedRoute><Navbar /><Status /><Footer /></ProtectedRoute></>
+        },
+        {
+          path: "/projects/:id",
+          element: <><ProtectedRoute><Navbar /><Project /><Footer /></ProtectedRoute></>
+        },
+        {
+          path: "update/:id",
+          element: <><ProtectedRoute><Navbar /><Update /><Footer /></ProtectedRoute></>
+        },
+        {
+          path: "/projects/:id/features",
+          element: <><ProtectedRoute><Navbar /><Kanban /><Footer /></ProtectedRoute></>
+        },
+        {
+          path: "*",
+          element: <div className="h-screen bg-zinc-900 flex items-center justify-center text-white flex-col">
+            <h1 className="text-4xl font-bold">404</h1>
+            <p>Page Not Found</p>
+            <Link to="/" className="text-blue-400 mt-4 underline">Go Home</Link>
+          </div>
+        }
+      ]
     }
   ])
 
@@ -79,7 +85,7 @@ function App() {
       <div className='bg-zinc-900 text-white min-h-screen'>
         <UserProvider>
           <DataProvider>
-              <RouterProvider router={router} />
+            <RouterProvider router={router} />
           </DataProvider>
         </UserProvider>
       </div>

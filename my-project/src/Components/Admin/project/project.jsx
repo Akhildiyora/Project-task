@@ -7,6 +7,7 @@ import formatDateManually from "../../dateFormater";
 import Popup from 'reactjs-popup';
 import { useUserDataContext } from "../../../Context/UserDataContext";
 import { IoTrashOutline, IoClose } from "react-icons/io5";
+import { FaListUl } from "react-icons/fa";
 const API = import.meta.env.VITE_BACKEND_API;
 
 const Project = () => {
@@ -167,9 +168,13 @@ const Project = () => {
               </div>
               <div className="flex gap-3 items-center">
                 <div className="text-white hover:text-green-400 px-3 text-sm border border-zinc-700 rounded-lg py-1">{project.status}</div>
-                <Link to={`/projects/${project.id}/features`} className="text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 ">Features</Link>
-                <button onClick={() => navigate(`/update/${id}`)} className="flex gap-2 items-center border border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
-                <button onClick={() => handleDeleteProject(project.id)} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+                <Link to={`/projects/${project.id}/features`} className="flex gap-2 items-center text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 "><FaListUl className="h-4 w-3" /> Features</Link>
+                {user?.role === 'admin' && (
+                  <button onClick={() => navigate(`/update/${id}`)} className="flex gap-2 items-center border hover:text-amber-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
+                )}
+                {user?.role === 'admin' && (
+                  <button onClick={() => handleDeleteProject(project.id)} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+                )}
               </div>
             </div>
             <p className="text-zinc-300 mt-2">{project.description}</p>

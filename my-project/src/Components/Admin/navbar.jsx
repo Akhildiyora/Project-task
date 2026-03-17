@@ -46,7 +46,7 @@ const Navbar = () => {
             position="bottom right"
             closeOnDocumentClick
           >
-            <div className='flex flex-col mt-2 border border-zinc-700/50 rounded-xl p-1 bg-zinc-800/50 min-w-[220px] shadow-xl z-[100]'>
+            <div className='flex flex-col mt-2 border border-zinc-700/50 rounded-xl p-1 bg-zinc-800 z-20 min-w-[220px] shadow-xl z-[100]'>
               <span className='text-zinc-400 px-4 py-1'>{user.email}</span>
               <button className='flex items-center gap-2 px-4 py-2 text-red-500 hover:text-red-400 border-t  mt-2 pt-2 border-zinc-700/50 w-full' onClick={handleLogout} ><FiLogOut />Logout</button>
             </div>

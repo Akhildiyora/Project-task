@@ -560,7 +560,6 @@ app.patch("/update-images/:id/", authMiddleware, adminMiddleware, async (c) => {
 });
 
 app.get("/features", authMiddleware, async (c) => {
-  const user = c.get("jwtPayload");
   const projectId = c.req.query("projectId");
 
   let query = supabase.from("features").select("*");
