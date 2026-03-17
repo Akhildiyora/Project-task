@@ -50,7 +50,7 @@ function App() {
     },
     {
       path: "/status",
-      element: <><ProtectedRoute requiredRole="admin"><Navbar /><Status /><Footer /></ProtectedRoute></>
+      element: <><ProtectedRoute><Navbar /><Status /><Footer /></ProtectedRoute></>
     },
     {
       path: "/projects/:id",

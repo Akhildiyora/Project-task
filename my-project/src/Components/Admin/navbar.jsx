@@ -36,7 +36,7 @@ const Navbar = () => {
           </div>
         </div>
         <div className="flex space-x-4 ">
-          {user.role === 'admin' && (
+          {user?.role === 'admin' && (
             <Link className="bg-gradient-to-l from-gray-700 via-zinc-700/50 to-gray-800/30 hover:from-gray-800/50 hover:to-gray-700 text-white font-medium py-2 px-4 rounded-md transition-all duration-200" to="/projects/create">+ New Project</Link>
           )}
           <Popup

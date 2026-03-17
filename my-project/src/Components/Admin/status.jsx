@@ -3,54 +3,42 @@ import { Link } from 'react-router-dom'
 import { useUserDataContext } from '../../Context/UserDataContext'
 import formatDateManually from '../dateFormater';
 import { MdOutlineDateRange } from "react-icons/md";
-
+import { useDataContext } from '../../Context/DataContext';
+const API = import.meta.env.VITE_BACKEND_API;
 
 const Status = () => {
   const { user } = useUserDataContext();
+  const { projects, refetchProjects } = useDataContext()
   const [columns, setColumns] = useState({
     upcoming: { name: "Upcoming", items: [] },
     inProgress: { name: "In Progress", items: [] },
     completed: { name: "Completed", items: [] },
   })
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const response = await fetch(`${API}/projects`, { credentials: 'include' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch projects: ${response.status}`);
-      }
-      const data = await response.json();
-      const newColumns = {
-        upcoming: { name: "Upcoming", items: data.filter(p => !p.status || p.status === 'upcoming') },
-        inProgress: { name: "In Progress", items: data.filter(p => p.status === 'inProgress') },
-        completed: { name: "Completed", items: data.filter(p => p.status === 'completed') },
-      };
-      setColumns(newColumns);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
-
   const [draggedItem, setDraggedItem] = useState(null)
-
+  console.log('projects', projects)
+  useEffect(() => {
+    const newColumns = {
+      upcoming: { name: "Upcoming", items: projects.filter(p => !p.status || p.status === 'upcoming') },
+      inProgress: { name: "In Progress", items: projects.filter(p => p.status === 'inProgress') },
+      completed: { name: "Completed", items: projects.filter(p => p.status === 'completed') },
+    };
+    setColumns(newColumns);
+  }, [projects]);
+  
   const handleDragStart = (columnId, item) => {
     setDraggedItem({ columnId, item })
   }
-
+  
   const handleDragOver = (e) => {
     e.preventDefault()
   }
-
+  
   const handleDrop = async (e, columnId) => {
     e.preventDefault()
     if (!draggedItem) return;
     const { columnId: sourceColumnId, item } = draggedItem;
     if (sourceColumnId === columnId) return;
-
+    
     try {
       await fetch(`${API}/projects/${item.id}`, {
         method: 'PATCH',
@@ -58,7 +46,7 @@ const Status = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: columnId })
       });
-      fetchProjects();
+      await refetchProjects();
     } catch (error) {
       console.error("Error moving project:", error);
       alert(error.message);
@@ -108,7 +96,7 @@ const Status = () => {
                         onDragStart={user?.role === 'admin' ? () => handleDragStart(columnId, item) : undefined}>
                         <div className='flex flex-col justify-center w-full'>
                           <div className='flex items-center gap-2'>
-                            <img src={`${item.logo}`} className='h-10 w-10' />
+                            <img src={`${item.logo}`} className='h-8 w-8 ' onError={(e)=>e.target.src='./logo.jpg'}/>
                             <div className="flex flex-col items-start justify-center text-sm w-full ">
                               <span className='font-semibold text-lg text-blue-300'>{item.project_name}</span>
                             </div>
