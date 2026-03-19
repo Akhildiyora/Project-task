@@ -10,7 +10,7 @@ import { OAuth2Client } from "google-auth-library";
 import { setCookie, deleteCookie, getCookie } from "hono/cookie";
 
 dotenv.config();
-const googleCient = new OAuth2Client(
+const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
 );
@@ -20,11 +20,50 @@ if (!process.env.JWT_SECRET) {
 const jwtSecret = process.env.JWT_SECRET!;
 const API = process.env.FRONTEND_API;
 const app = new Hono();
+const userSchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  email: z.string().email(),
+  password: z.string().min(6).optional(),
+  googleId: z.string().min(6).optional(),
+});
+const ProjectSchema = z.object({
+  images: z.array(z.string().url()).optional(),
+  project_name: z.string().min(1).optional(),
+  status: z.string().optional(),
+  due_date: z.string().optional(),
+  description: z.string().optional(),
+  members: z.array(z.string().email()).optional(),
+  logo: z.string().url().nullable().optional(),
+  userId: z.number().optional(),
+});
+const FeatureSchema = z.object({
+  feature_name: z.string().min(1).optional(),
+  desc: z.string().optional(),
+  due_date: z.string().optional(),
+  status: z.string().optional(),
+  project_id: z.number().optional(),
+  assign: z.string().email().optional(),
+});
+const createImageSchema = (maxSize) =>
+  z
+    .custom((val) => val instanceof File)
+    .refine((file) => file.size > 0, "File is empty")
+    .refine(
+      (file) => file.size <= maxSize,
+      `Max size ${maxSize / 1024 / 1024}MB`,
+    )
+    .refine(
+      (file) =>
+        ["image/jpeg", "image/png", "image/webp", "image/svg+xml"].includes(
+          file.type,
+        ),
+      "Invalid image type",
+    );
 
 app.use(
-  "*",cors({
-
-  // for local
+  "*",
+  cors({
+    // for local
 
     // origin: [`${API}`],
     // credentials: true,
@@ -42,11 +81,6 @@ app.get("/", (c) => c.text("working"));
 
 app.post("/register", async (c) => {
   const { name, email, password } = await c.req.json();
-  const userSchema = z.object({
-    name: z.string().min(2).max(100),
-    email: z.string().email(),
-    password: z.string().min(6),
-  });
   const result = userSchema.safeParse({ name, email, password });
   if (!result.success) {
     return c.json(
@@ -86,12 +120,8 @@ app.post("/register", async (c) => {
 });
 
 app.post("/login", async (c) => {
-  const loginSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
-  });
   const body = await c.req.json();
-  const parsed = loginSchema.safeParse(body);
+  const parsed = userSchema.safeParse(body);
   if (!parsed.success) {
     return c.json({ error: parsed.error.issues }, 400);
   }
@@ -125,7 +155,7 @@ app.post("/login", async (c) => {
 
     secure: true,
     sameSite: "none",
-    
+
     // for local
 
     // secure: false,
@@ -148,7 +178,7 @@ app.post("/google-login", async (c) => {
     if (!token) {
       return c.json({ message: "Token is required" }, 400);
     }
-    const ticket = await googleCient.verifyIdToken({
+    const ticket = await googleClient.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
@@ -157,6 +187,15 @@ app.post("/google-login", async (c) => {
       return c.json({ message: "Invalid google token payload" }, 401);
     }
     const { email, name, sub: googleId, email_verified } = payload;
+
+    const result = userSchema.safeParse({ name, email, googleId });
+    if (!result.success) {
+      return c.json(
+        { error: "Invalid input data", details: result.error.issues },
+        400,
+      );
+    }
+
     if (!email || !email_verified) {
       return c.json({ message: "Email is not verified" }, 401);
     }
@@ -307,10 +346,10 @@ app.get("/projects", authMiddleware, async (c) => {
     .select("*")
     .or(`user_id.eq.${user.sub},members.cs.{${user.email.toLowerCase()}}`);
 
-  if (error){ 
+  if (error) {
     console.error("PROJECT FETCH ERROR:", error);
     return c.json({ error: error.message }, 500);
-  };
+  }
   return c.json(data);
 });
 
@@ -322,7 +361,7 @@ app.get("/projects/:id", authMiddleware, async (c) => {
     .from("projects")
     .select("*")
     .eq("id", id)
-    .eq("user_id", user.sub)
+    .or(`user_id.eq.${user.sub},members.cs.{${user.email}}`)
     .single();
 
   if (error) return c.json({ error: error.message }, 500);
@@ -378,7 +417,6 @@ app.delete("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
 
 app.get("/public/projects/:id", async (c) => {
   const id = c.req.param("id");
-  const user = c.get("jwtPayload");
   const { data, error } = await supabase
     .from("projects")
     .select("*")
@@ -395,12 +433,26 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
 
   console.log("REQUEST BODY:", body);
 
-  const { name, description, due_date, members, logo } = body
+  const { project_name, description, due_date, members, logo } = body;
+
+  const result = ProjectSchema.safeParse({
+    project_name,
+    description,
+    due_date,
+    members,
+    logo,
+  });
+  if (!result.success) {
+    return c.json(
+      { error: "Invalid input data", details: result.error.issues },
+      400,
+    );
+  }
 
   const { data, error } = await supabase
     .from("projects")
     .insert({
-      project_name: name,
+      project_name: project_name,
       description,
       due_date: due_date,
       user_id: user.sub,
@@ -420,16 +472,34 @@ app.post("/projects", authMiddleware, adminMiddleware, async (c) => {
 app.patch("/update/:id", authMiddleware, adminMiddleware, async (c) => {
   const user = c.get("jwtPayload");
   const id = c.req.param("id");
-  const { description, due_date, members, logo } = await c.req.json();
+  const { project_name, description, due_date, members, logo, status } =
+    await c.req.json();
+
+  const result = ProjectSchema.safeParse({
+    project_name,
+    description,
+    due_date,
+    members,
+    logo,
+    status,
+  });
+  if (!result.success) {
+    return c.json(
+      { error: "Invalid input data", details: result.error.issues },
+      400,
+    );
+  }
 
   const { data, error } = await supabase
     .from("projects")
     .update({
+      project_name,
       description,
       due_date: due_date,
       user_id: user.sub,
       members: members,
       logo: logo,
+      status,
     })
     .select("*")
     .eq("id", id)
@@ -444,17 +514,28 @@ app.post("/upload-images", authMiddleware, adminMiddleware, async (c) => {
     const body = await c.req.parseBody();
     const file = body["file"];
 
-    if (!file || typeof file === "string") {
-      return c.json({ error: "No file uploaded" }, 400);
+    const gallerySchema = z.object({
+      file: createImageSchema(10 * 1024 * 1024),
+    });
+    const result = gallerySchema.safeParse({ file });
+    if (!result.success) {
+      return c.json(
+        {
+          error: "Validation failed",
+          details: result.error.issues.map((issue) => issue.message),
+        },
+        400,
+      );
     }
 
-    const fileExt = file.name.split(".").pop();
+    const validFile = result.data.file;
+    const fileExt = validFile.name.split(".").pop()?.toLowerCase() || "jpg";
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `Gallery/${fileName}`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("Images")
-      .upload(filePath, file);
+      .upload(filePath, validFile );
 
     if (error) {
       console.error("Storage upload error:", error);
@@ -480,10 +561,24 @@ app.post("/upload-images", authMiddleware, adminMiddleware, async (c) => {
 app.post("/upload-logo", authMiddleware, adminMiddleware, async (c) => {
   try {
     const body = await c.req.parseBody();
-    const logo = body["file"];
-    if (!logo || typeof logo === "string") {
-      return c.json({ error: "No logo uploaded" }, 400);
+    const file = body["file"];
+
+    const logoSchema = z.object({
+      file: createImageSchema(5 * 1024 * 1024),
+    });
+
+    const result = logoSchema.safeParse({ file });
+    if (!result.success) {
+      return c.json(
+        {
+          error: "Validation failed",
+          details: result.error.issues.map((i) => i.message),
+        },
+        400,
+      );
     }
+
+    const logo = result.data.file;
 
     const logoExt = logo.name.split(".").pop();
     const logoName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${logoExt}`;
@@ -491,7 +586,7 @@ app.post("/upload-logo", authMiddleware, adminMiddleware, async (c) => {
 
     console.log("logoName", logoName);
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("Images")
       .upload(logoPath, logo);
 
@@ -544,30 +639,22 @@ app.patch("/projects/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const updates = await c.req.json();
 
+  const result = ProjectSchema.safeParse( updates );
+  if (!result.success) {
+    return c.json(
+      { error: "Invalid input data", details: result.error.issues },
+      400,
+    );
+  }
+
   const { data, error } = await supabase
     .from("projects")
-    .update(updates)
+    .update(result.data)
     .eq("id", id)
     .select("*")
     .single();
 
   if (error) return c.json({ error: error.message }, 500);
-  return c.json(data);
-});
-
-app.patch("/update-images/:id/", authMiddleware, adminMiddleware, async (c) => {
-  const id = c.req.param("id");
-  const body = await c.req.json();
-  const images = body.images;
-
-  const { data, error } = await supabase
-    .from("projects")
-    .update({ images })
-    .eq("id", id)
-    .select("images");
-
-  if (error) return c.json({ error: error.message }, 500);
-  console.log("image delete from database");
   return c.json(data);
 });
 
@@ -604,6 +691,29 @@ app.get("/public/features", async (c) => {
 app.post("/features", authMiddleware, adminMiddleware, async (c) => {
   const user = c.get("jwtPayload");
   const feature = await c.req.json();
+  const {
+    feature: feature_name,
+    desc,
+    due_date,
+    status,
+    project_id,
+    assign,
+  } = feature;
+
+  const result = FeatureSchema.safeParse({
+    feature_name,
+    desc,
+    due_date,
+    status,
+    project_id,
+    assign,
+  });
+  if (!result.success) {
+    return c.json({
+      error: "Invalid input data",
+      details: result.error.issues,
+    });
+  }
 
   const { data, error } = await supabase
     .from("features")
@@ -618,6 +728,29 @@ app.post("/features", authMiddleware, adminMiddleware, async (c) => {
 app.patch("/features/:id", authMiddleware, adminMiddleware, async (c) => {
   const id = c.req.param("id");
   const updates = await c.req.json();
+  const {
+    feature: feature_name,
+    desc,
+    due_date,
+    status,
+    project_id,
+    assign,
+  } = updates;
+
+  const result = FeatureSchema.safeParse({
+    feature_name,
+    desc,
+    due_date,
+    status,
+    project_id,
+    assign,
+  });
+  if (!result.success) {
+    return c.json({
+      error: "Invalid input data",
+      details: result.error.issues,
+    });
+  }
 
   const { data, error } = await supabase
     .from("features")

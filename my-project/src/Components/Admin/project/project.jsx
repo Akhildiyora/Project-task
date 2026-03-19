@@ -6,16 +6,21 @@ import { BsPerson, BsFillPersonFill } from "react-icons/bs";
 import formatDateManually from "../../dateFormater";
 import Popup from 'reactjs-popup';
 import { useUserDataContext } from "../../../Context/UserDataContext";
-import { IoTrashOutline, IoClose } from "react-icons/io5";
+import { IoTrashOutline, IoClose, IoArrowBack } from "react-icons/io5";
 import { FaListUl } from "react-icons/fa";
+import { Dialog } from '@headlessui/react'
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 const API = import.meta.env.VITE_BACKEND_API;
 
 const Project = () => {
+  const navigate = useNavigate()
   const { id } = useParams();
   const projectId = Number(id)
   const { user } = useUserDataContext();
   const { projects, refetchProjects } = useDataContext();
-  const navigate = useNavigate()
+  const [isUploading, setIsUploading] = useState(false);
+  const [open, setOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const project = projects?.find(p => p.id === projectId);
 
@@ -43,7 +48,7 @@ const Project = () => {
     return extractUrls(project.images).filter(url => typeof url === 'string' && url.startsWith('http'));
   }, [project?.images]);
 
-  if (!project) {
+  if (!projects) {
     return (
       <div className="p-6 mt-18 text-white">
         Loading project...
@@ -51,8 +56,15 @@ const Project = () => {
     );
   }
 
-  const [isUploading, setIsUploading] = useState(false);
-  const Members = project?.members
+  if (!project) {
+    return (
+      <div className="p-6 mt-18 text-red-400">
+        Project not found.
+      </div>
+    );
+  }
+
+  const Members = project?.members || []
   const displayMembers = Members.filter((m) => m !== user?.email)
 
 
@@ -103,11 +115,9 @@ const Project = () => {
 
   const handleDeleteImage = async (imgUrl) => {
     const confirmed = window.confirm("Sure!, You want to delete this Image?")
-    if(!confirmed) return;
-    if (!imgUrl) return;
+    if (!confirmed || !imgUrl) return;
     console.log(imgUrl)
-    const previousImages = displayImages;
-    const updatedImages = displayImages.filter(url => url !== imgUrl);
+    const images = displayImages.filter(url => url !== imgUrl);
 
     try {
       setIsUploading(true);
@@ -120,30 +130,29 @@ const Project = () => {
 
       if (!deleteresponse.ok) throw new Error('Delete failed');
 
-      const updateResponse = await fetch(`${API}/update-images/${id}`, {
+      const updateResponse = await fetch(`${API}/projects/${id}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ images: updatedImages })
+        body: JSON.stringify({ images })
       })
 
       if (!updateResponse.ok) throw new Error('Failed to update project images after delete');
 
       await updateResponse.json();
       await refetchProjects();
-
+      return true;
     } catch (error) {
       console.error("Delete error:", error);
       alert("Failed to delete images.");
+      return false
     } finally {
       setIsUploading(false);
     }
   }
 
   const handleDeleteProject = async (id) => {
-    const confirmed = window.confirm("Sure!, You want to delete this Project?")
-    if(!confirmed) return;
-
+    setIsDeleting(true);
     try {
       const response = await fetch(`${API}/projects/${id}`, {
         method: 'DELETE',
@@ -153,12 +162,17 @@ const Project = () => {
       console.log("response delete project", response)
       if (response.ok) {
         await refetchProjects();
+        setOpen(false);
+        navigate("/projects")
+        return;
       }
+      throw new Error('Failed to delete project');
     } catch (error) {
       console.error("Error removing feature:", error);
       alert(error.message);
+    } finally {
+      setIsDeleting(false);
     }
-    navigate("/projects")
   }
 
 
@@ -167,10 +181,11 @@ const Project = () => {
       <div className="max-w-320 mx-auto">
         {project && (
           <div>
+            <button onClick={() => navigate('/projects')} className="flex items-center gap-2 mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
             <div className="flex w-full justify-between">
               <div className="flex items-center gap-4">
                 <div className="size-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-                  <img src={`${project.logo}`} className="object-contain h-8 w-8" />
+                  <img src={project.logo || "/logo.jpg"} alt={project.id} className="object-contain h-8 w-8" />
                 </div>
                 <h3 className="text-3xl font-bold text-white">{project.project_name}</h3>
               </div>
@@ -181,7 +196,7 @@ const Project = () => {
                   <button onClick={() => navigate(`/update/${id}`)} className="flex gap-2 items-center border hover:text-amber-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
                 )}
                 {user?.role === 'admin' && (
-                  <button onClick={() => handleDeleteProject(project.id)} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+                  <button onClick={() => setOpen(true)} disabled={isDeleting} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
                 )}
               </div>
             </div>
@@ -221,7 +236,7 @@ const Project = () => {
                         accept="image/*"
                         onChange={handleImageUpload}
                         disabled={isUploading}
-                        className="text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 cursor-pointer"
+                        className="text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                       />
                       {isUploading ? (
                         <span className="text-xs text-blue-400 ml-2">Updating gallery...</span>
@@ -246,23 +261,23 @@ const Project = () => {
                           nested
                         >
                           {(close) => (
-                            <div className="h-full w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50">
-                              <div className="relative max-h-[90vh] my-auto mb-8 flex w-full max-w-lg shadow-lg rounded-lg bg-gradient-to-r from-zinc-900 to-blue-900/10">
+                            <div className="h-screen w-screen flex items-center justify-center bg-zinc-700/80 z-50 text-white">
+                              <div className="relative my-auto flex w-full max-w-[90vw] shadow-lg rounded-lg bg-gradient-to-r from-zinc-900/50 to-blue-900/10">
                                 <button
-                                  className="absolute -top-9 right-0 flex bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200"
+                                  className="absolute -top-9 right-2 flex bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200"
                                   onClick={close}
                                 >
                                   <IoClose className="text-2xl" />
                                   Close
                                 </button>
-                                <img src={imgUrl} alt={`Gallery ${imageId}`} className="w-full h-full object-contain" />
+                                <img src={imgUrl} alt={`Gallery ${imageId}`} className="w-full max-h-[90vh] object-contain" />
                                 {user?.role === "admin" ? (
                                   <button
                                     onClick={async () => {
-                                      await handleDeleteImage(imgUrl);
-                                      close();
+                                      const deleted = await handleDeleteImage(imgUrl);
+                                      if (deleted) close();
                                     }}
-                                    className="absolute -top-9 right-22 flex gap-1 items-center bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200"
+                                    className="absolute -top-9 right-24 flex gap-1 items-center bg-black rounded-full px-2.5 font-bold py-1 text-zinc-400 hover:text-red-400 transition-colors duration-200"
                                   >
                                     <IoTrashOutline />
                                     <span>Delete</span>
@@ -283,6 +298,47 @@ const Project = () => {
           </div>
         )}
       </div>
+      <Dialog open={open} onClose={isDeleting ? () => { } : setOpen} className="relative z-50">
+        <div className="fixed inset-0 bg-zinc-900/80 backdrop-blur-md" aria-hidden="true" />
+
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="relative w-full max-w-lg rounded-t-lg border-t-4 border-red-600 bg-gradient-to-r from-zinc-800 to-yellow-600/10 shadow-lg">
+
+            <div className="border border-zinc-700/30 px-4 pt-4 pb-5 rounded-t-lg">
+              <Dialog.Title className="mb-3 flex items-center gap-2 text-xl font-bold text-white border-b border-zinc-700/80 pb-2">
+                <ExclamationTriangleIcon className="size-5 rounded border border-zinc-700/90 p-0.5 text-red-400" />
+                <span>Delete Project</span>
+              </Dialog.Title>
+
+              <p className="text-sm text-zinc-300">
+                Are you sure you want to delete{" "}
+                <span className="font-semibold text-white">{project.project_name}</span>?
+                This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex border-t-2 border-black">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                disabled={isDeleting}
+                className="w-full border-r border-zinc-700 bg-transparent px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700/60 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDeleteProject(project.id)}
+                disabled={isDeleting}
+                className="w-full bg-gradient-to-r from-red-600 to-red-500 px-4 py-2 text-sm font-semibold text-white hover:from-red-500 hover:to-red-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </div>
   );
 }

@@ -95,9 +95,10 @@ const Create = () => {
         <div className='bg-zinc-900/50 py-8 px-16 flex flex-col items-center justify-center'>
           <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-500 to-rose-400">Create New Project</h2>
           <span className='mb-8 text-sm text-zinc-400'>Set up a workspace for your next big idea.</span>
-          <form onSubmit={handleSubmit} className="bg-zinc-900/80 p-6 rounded-lg shadow-2xl w-full min-w-lg max-w-2xl flex flex-col gap-4 border border-zinc-800">
+          <div className='bg-zinc-900/80 p-6 rounded-lg shadow-2xl w-full min-w-lg max-w-2xl border flex flex-col gap-4 border-zinc-800'>
+          <form onSubmit={handleSubmit} className=" flex flex-col gap-4 ">
             <div className="flex flex-col w-full ">
-              <label className="text-zinc-400 mb-2" required>Project Name</label>
+              <label className="text-zinc-400 mb-2">Project Name</label>
               <input required name='name' type="text" placeholder="Enter project name" className="bg-zinc-800/30 text-white p-2 px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40" />
             </div>
             <div className='flex p-2 gap-2 items-center justify-between border border-zinc-700/30 rounded-lg bg-zinc-800/30'>
@@ -112,7 +113,7 @@ const Create = () => {
                   accept="image/*"
                   onChange={(e) => handleUpload(e)}
                   disabled={isUploading || user?.role !== 'admin'}
-                  className='text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-zinc-700/50 hover:file:border-zinc-700 file:text-sm file:font-semibold file:bg-zinc-900/50 file:text-zinc-400 hover:file:bg-zinc-900 file:cursor-pointer'
+                  className='text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-zinc-700/50 hover:file:border-zinc-700 file:text-sm file:font-semibold file:bg-zinc-900/50 file:text-zinc-400 hover:file:bg-zinc-900 file:cursor-pointer disabled:cursor-not-allowed disabled:opacity-60'
                 />
                 {isUploading && <span className="text-xs text-zinc-400">Uploading...</span>}
                 {logoUrl && logoUrl !== defaultLogo && (
@@ -132,8 +133,10 @@ const Create = () => {
               <label className="text-zinc-400 mb-2">Description</label>
               <textarea name='description' placeholder="Enter project description" className="bg-zinc-800/30 text-white p-2 px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40  w-full"></textarea>
             </div>
-            <button type="submit" disabled={IsSubmit || user?.role !== 'admin'} className="bg-gradient-to-r from-blue-600/50 via-violet-400 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/50 hover:to-blue-400/50 transition-all duration-200">{IsSubmit ? "Creating Project..." : "Create Project"}</button>
+            <button type="submit" disabled={IsSubmit || user?.role !== 'admin'} className="bg-gradient-to-r from-blue-600/50 via-violet-400 to-blue-500/50 text-white font-medium py-2 px-4 rounded-md hover:from-blue-500/80 hover:to-blue-400/80 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60">{IsSubmit ? "Creating Project..." : "Create Project"}</button>
           </form>
+          <button onClick={() => navigate(`/projects`)} className="bg-tranparent hover:bg-zinc-700/60 text-white font-medium py-2 px-4 rounded-md transition-all duration-200 border border-zinc-500 cursor-pointer">Cancel</button>
+          </div>
         </div>
       </div>
     </div>

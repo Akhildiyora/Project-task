@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useUserDataContext } from '../../Context/UserDataContext'
 import formatDateManually from '../dateFormater';
 import { MdOutlineDateRange } from "react-icons/md";
+import { IoArrowBack } from "react-icons/io5";
+
 import { useDataContext } from '../../Context/DataContext';
 const API = import.meta.env.VITE_BACKEND_API;
 
 const Status = () => {
+  const navigate = useNavigate();
   const { user } = useUserDataContext();
   const { projects, refetchProjects } = useDataContext()
   const [columns, setColumns] = useState({
@@ -72,7 +75,8 @@ const Status = () => {
   return (
     <div>
       <div className='p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
-        <div className='flex items-center flex-col gap-4 w-full max-w-6xl'>
+        <div className='flex items-start flex-col gap-4 w-full max-w-6xl'>
+          <button onClick={() => navigate('/projects')} className="flex ml-20 items-center gap-2 mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
           <div className='flex items-center justify-between w-full px-20 gap-4'>
             <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-l from-blue-500/80 via-blue-400/80 to-sky-400'>Projects Status</h1>
           </div>
@@ -96,7 +100,7 @@ const Status = () => {
                         onDragStart={user?.role === 'admin' ? () => handleDragStart(columnId, item) : undefined}>
                         <div className='flex flex-col justify-center w-full'>
                           <div className='flex items-center gap-2'>
-                            <img src={`${item.logo}`} className='h-8 w-8 ' onError={(e)=>e.target.src='./logo.jpg'}/>
+                            <img src={item.logo} className='h-8 w-8 ' onError={(e)=>e.target.src='./logo.jpg'}/>
                             <div className="flex flex-col items-start justify-center text-sm w-full ">
                               <span className='font-semibold text-lg text-blue-300'>{item.project_name}</span>
                             </div>

@@ -6,6 +6,7 @@ import { TbCopy, TbCopyCheckFilled } from "react-icons/tb";
 import { IoMdOpen } from "react-icons/io";
 import formatDateManually from '../dateFormater.jsx';
 import { MdOutlineDateRange } from "react-icons/md";
+import { IoArrowBack } from "react-icons/io5";
 const FAPI = import.meta.env.VITE_FRONTEND_API;
 
 const Projects = () => {
@@ -13,7 +14,9 @@ const Projects = () => {
   const navigate = useNavigate();
   const { user } = useUserDataContext();
   const { projects, dataLoading } = useDataContext();
-
+  const sortedProjects = [...projects].sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+  );
   const CopyUrl = async (id) => {
     const currentUrl = `${FAPI}/public/projects/${id}/features`;
     await navigator.clipboard.writeText(currentUrl);
@@ -27,6 +30,7 @@ const Projects = () => {
   return (
     <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
       <div className="max-w-320 mx-auto">
+        <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Dashboard</button>
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold">Projects</h1>
@@ -37,23 +41,23 @@ const Projects = () => {
 
         {dataLoading ? (
           <p>Loading projects...</p>
-        ) : projects.length === 0 ? (
+        ) : sortedProjects.length === 0 ? (
           <div className="bg-zinc-800 p-8 rounded-lg text-center">
             <p className="text-zinc-400 mb-4">No projects found.</p>
             {user?.role === 'admin' && <Link to="/projects/create" className="text-blue-400 underline">Create your first project</Link>}
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-4">
-            {projects.map(project => (
+            {sortedProjects.map(project => (
               <div key={project.id} onClick={() => navigate(`/projects/${project.id}`)} className="bg-zinc-800 hover:bg-zinc-700/40 p-6 rounded-2xl shadow cursor-pointer transition border border-zinc-600">
                 <div className='flex justify-between items-center'>
                   <h3 className="text-xl font-semibold ">{project.project_name}</h3>
                   <div className='flex items-center '>
-                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={(e) => {e.stopPropagation(); CopyUrl(project.id);}}>{copiedId === project.id ? <TbCopyCheckFilled /> : <TbCopy />}</button>
-                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={(e) => {e.stopPropagation(); window.open(`${FAPI}/projects/${project.id}`, '_blank');}}><IoMdOpen /></button>
+                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={(e) => { e.stopPropagation(); CopyUrl(project.id); }}>{copiedId === project.id ? <TbCopyCheckFilled /> : <TbCopy />}</button>
+                    <button className='cursor-pointer hover:bg-zinc-700 p-2 rounded-full' onClick={(e) => { e.stopPropagation(); window.open(`${FAPI}/projects/${project.id}`, '_blank'); }}><IoMdOpen /></button>
                   </div>
                 </div>
-                <p className="text-zinc-400 text-sm mt-1 mb-4">{project.description}</p>
+                <p className="text-zinc-400 text-sm mt-1 mb-4 line-clamp-2">{project.description}</p>
 
                 <div className='border-zinc-600 border-t'></div>
                 <div className="flex justify-between items-center mt-4">
