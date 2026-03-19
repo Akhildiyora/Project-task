@@ -44,9 +44,9 @@ const FeatureSchema = z.object({
   project_id: z.number().optional(),
   assign: z.string().email().optional(),
 });
-const createImageSchema = (maxSize) =>
+const createImageSchema = (maxSize: number) =>
   z
-    .custom((val) => val instanceof File)
+    .custom<File>((val) => val instanceof File)
     .refine((file) => file.size > 0, "File is empty")
     .refine(
       (file) => file.size <= maxSize,
@@ -580,7 +580,7 @@ app.post("/upload-logo", authMiddleware, adminMiddleware, async (c) => {
 
     const logo = result.data.file;
 
-    const logoExt = logo.name.split(".").pop();
+    const logoExt = logo.name.split(".").pop()?.toLowerCase() || "png";
     const logoName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${logoExt}`;
     const logoPath = `Logos/${logoName}`;
 
