@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useUserDataContext } from '../../../Context/UserDataContext'
-import { useDataContext } from '../../../Context/DataContext';
 import Popup from 'reactjs-popup';
 import { FaRegEdit } from "react-icons/fa";
 import formatDateManually from '../../dateFormater';
@@ -15,7 +14,6 @@ const Kanban = () => {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
   const { user } = useUserDataContext();
-  const { projects, refetchProjects } = useDataContext();
   const [isSaving, setIsSaving] = useState(false)
   const sortByOldest = (arr) =>
     [...arr].sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
@@ -30,17 +28,29 @@ const Kanban = () => {
   const [deleteFeatureId, setDeleteFeatureId] = useState(null);
   const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
   useEffect(() => {
-    if (projectId) {
+    if (!projectId) return;
 
-      refetchProjects();
-      fetchfeatures();
-      console.log('project', project)
-    }
+    fetchProject();
+    fetchfeatures();
+    console.log('project', project)
   }, [projectId]);
 
-  useEffect(() => {
-    setProject(projects.find((p) => p.id === Number(projectId)))
-  }, [projectId, projects]);
+  const fetchProject = async () => {
+    try {
+      const response = await fetch(`${API}/projects/${projectId}`, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch project: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setProject(data);
+    } catch (error) {
+      console.error("Error fetching project:", error);
+    }
+  };
 
   const fetchfeatures = async () => {
     setIsFeaturesLoading(true);
@@ -231,7 +241,7 @@ const Kanban = () => {
 
   return (
     <div>
-      <div className='p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
+      <div className='p-2 sm:p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
         <div className='flex items-start flex-col gap-4 w-full max-w-6xl mx-auto'>
           <button onClick={() => navigate(`/projects/${projectId}`)} className="flex items-center gap-2 ml-20 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
           <div className='flex items-center justify-between w-full px-20 gap-4'>

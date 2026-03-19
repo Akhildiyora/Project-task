@@ -3,7 +3,7 @@ import { useUserDataContext } from '../../Context/UserDataContext';
 import Popup from 'reactjs-popup';
 import { AiOutlineProject } from "react-icons/ai";
 import { FiLogOut } from "react-icons/fi";
-const API=import.meta.env.VITE_BACKEND_API;
+const API = import.meta.env.VITE_BACKEND_API;
 
 const Navbar = () => {
   const { user, setUser } = useUserDataContext();
@@ -27,9 +27,9 @@ const Navbar = () => {
   return (
     <div className="fixed top-0 bg-gradient-to-r from-zinc-800 via-zinc-700 to-gray-900 text-white w-full z-50">
       <div className="flex justify-between items-center p-4 max-w-350 mx-auto ">
-        <div className='flex items-center gap-2 text-xl font-semibold'><AiOutlineProject className="h-10 w-10" />Projectify</div>
-        <div className='border border-zinc-600 bg-zinc-800/80 p-2 px-6 rounded-full'>
-          <div className="space-x-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-400 to-blue-400">
+        <Link to="/dashboard" className='flex items-center gap-2 text-xl font-semibold'><AiOutlineProject className="h-10 w-10" /><span className='hidden md:inline'>Projectify</span></Link>
+        <div className='border border-zinc-600 bg-zinc-800/80 px-4 py-1.5 md:p-2 md:px-6 rounded-full'>
+          <div className="space-x-4 md:space-x-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-400 to-blue-400">
             <Link className=' font-semibold hover:font-bold' to="/dashboard">Home</Link>
             <Link className=' font-semibold hover:font-bold' to="/projects">Projects</Link>
             <Link className=' font-semibold hover:font-bold' to="/status">Status</Link>
@@ -37,11 +37,11 @@ const Navbar = () => {
         </div>
         <div className="flex space-x-4 ">
           {user?.role === 'admin' && (
-            <Link className="bg-gradient-to-l from-gray-700 via-zinc-700/50 to-gray-800/10 hover:from-gray-800/30 hover:to-gray-700 text-white font-medium py-2 px-4 rounded-md transition-all duration-200" to="/projects/create">+ New Project</Link>
+            <Link className="hidden sm:inline bg-gradient-to-l from-gray-700 via-zinc-700/50 to-gray-800/10 hover:from-gray-800/30 hover:to-gray-700 text-white font-medium py-2 px-4 rounded-md transition-all duration-200" to="/projects/create">+ New Project</Link>
           )}
           <Popup
             trigger={
-              <button className="flex items-center bg-gradient-to-r from-gray-700/80 via-zinc-700/70 to-gray-900/10 hover:from-gray-800/20 hover:to-gray-700/50 text-white font-bold py-2 px-4 rounded-md cursor-pointer gap-2"><div className='size-6 bg-gray-900 rounded-lg text-sm flex justify-center items-center'>A</div> {user.name}</button>
+              <button className="flex items-center bg-gradient-to-r from-gray-700/80 via-zinc-700/70 to-gray-900/10 hover:from-gray-800/20 hover:to-gray-700/50 text-white font-bold py-1.5 sm:py-2 px-2 sm:px-4 rounded-md cursor-pointer gap-2"><div className='size-6 bg-gray-900 rounded-lg text-sm flex justify-center items-center'>A</div> <span className="hidden sm:inline">{user.name}</span></button>
             }
             position="bottom right"
             closeOnDocumentClick

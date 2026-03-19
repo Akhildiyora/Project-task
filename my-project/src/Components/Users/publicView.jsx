@@ -14,10 +14,15 @@ const PublicView = () => {
     const [images, setImages] = useState([])
 
     useEffect(() => {
-        if (projectId) {
+        if (!projectId) return;
+        fetchProject();
+        fetchfeatures();
+
+        const interval = setInterval(() => {
             fetchProject();
             fetchfeatures();
-        }
+        }, 5000)
+        return () => clearInterval(interval);
     }, [projectId]);
 
     const fetchProject = async () => {
@@ -94,23 +99,23 @@ const PublicView = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {project.description && (
                                 <p className='text-base text-zinc-400 max-w-2xl leading-relaxed mb-2'>{project.description}</p>
                             )}
-                            
+
                         </div>
                     </div>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-10 items-start">
-                    
+
                     <div className='flex-1 lg:max-w-3xl w-full'>
                         <h3 className='text-md font-medium text-white mb-6 flex items-center gap-2'>
                             <GrGallery />
                             Project Gallery
                         </h3>
-                        
+
                         {images.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {images.map((imgUrl, id) => (
@@ -130,7 +135,7 @@ const PublicView = () => {
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="w-full lg:w-[380px] shrink-0">
                         {Object.keys(columns).map((columnId) => (
                             <div key={columnId} className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden shadow-lg sticky top-6">
@@ -146,7 +151,7 @@ const PublicView = () => {
                                     </div>
                                     <p className="text-sm text-zinc-500 mt-1 ml-4.5">Features successfully delivered</p>
                                 </div>
-                                
+
                                 <div className="p-4 max-h-[600px] overflow-y-auto custom-scrollbar flex flex-col gap-3">
                                     {columns[columnId].items.length === 0 ? (
                                         <div className="text-center p-6 border border-dashed border-zinc-800/50 rounded-xl">

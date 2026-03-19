@@ -177,26 +177,26 @@ const Project = () => {
 
 
   return (
-    <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
+    <div className="p-2 sm:p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
       <div className="max-w-320 mx-auto">
         {project && (
           <div>
-            <button onClick={() => navigate('/projects')} className="flex items-center gap-2 mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
-            <div className="flex w-full justify-between">
-              <div className="flex items-center gap-4">
-                <div className="size-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-                  <img src={project.logo || "/logo.jpg"} alt={project.id} className="object-contain h-8 w-8" />
+            <button onClick={() => navigate('/projects')} className="flex items-center gap-2 mb-2 sm:mb-4 cursor-pointer text-zinc-400  text-sm sm:text-md hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 w-full justify-between">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className="size-8 sm:size-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
+                  <img src={project.logo || "/logo.jpg"} alt={project.id} className="object-contain size-7 sm:size-8" />
                 </div>
-                <h3 className="text-3xl font-bold text-white">{project.project_name}</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold text-white">{project.project_name}</h3>
               </div>
-              <div className="flex gap-3 items-center">
-                <div className="text-white hover:text-green-400 px-3 text-sm border border-zinc-700 rounded-lg py-1">{project.status}</div>
-                <Link to={`/projects/${project.id}/features`} className="flex gap-2 items-center text-white hover:text-blue-400 px-3 text-sm border border-zinc-700 rounded-lg py-1 "><FaListUl className="h-4 w-3" /> Features</Link>
+              <div className="flex gap-2 sm:gap-3 items-center">
+                <div className="text-white hover:text-green-400 px-2 sm:px-3 text-xs sm:text-sm border border-zinc-700 rounded-lg py-1">{project.status}</div>
+                <Link to={`/projects/${project.id}/features`} className="flex gap-2 items-center text-white hover:text-blue-400 px-2 sm:px-3 text-xs sm:text-sm border border-zinc-700 rounded-lg py-1 "><FaListUl className="h-4 w-3" /> Features</Link>
                 {user?.role === 'admin' && (
-                  <button onClick={() => navigate(`/update/${id}`)} className="flex gap-2 items-center border hover:text-amber-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><MdOutlineEdit />Edit</button>
+                  <button onClick={() => navigate(`/update/${id}`)} className="flex gap-2 items-center border hover:text-amber-400 border-zinc-700 py-1 text-xs sm:text-sm px-2 sm:px-3 rounded-lg"><MdOutlineEdit />Edit</button>
                 )}
                 {user?.role === 'admin' && (
-                  <button onClick={() => setOpen(true)} disabled={isDeleting} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-sm px-3 rounded-lg"><IoTrashOutline />Delete</button>
+                  <button onClick={() => setOpen(true)} disabled={isDeleting} className="flex gap-2 items-center border hover:text-red-400 border-zinc-700 py-1 text-xs sm:text-sm px-2 sm:px-3 rounded-lg"><IoTrashOutline />Delete</button>
                 )}
               </div>
             </div>

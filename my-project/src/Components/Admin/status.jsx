@@ -74,44 +74,44 @@ const Status = () => {
 
   return (
     <div>
-      <div className='p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
-        <div className='flex items-start flex-col gap-4 w-full max-w-6xl'>
-          <button onClick={() => navigate('/projects')} className="flex ml-20 items-center gap-2 mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
-          <div className='flex items-center justify-between w-full px-20 gap-4'>
-            <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-l from-blue-500/80 via-blue-400/80 to-sky-400'>Projects Status</h1>
+      <div className='p-2 sm:p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
+        <div className='flex items-start flex-col gap-2 sm:gap-4 w-full max-w-6xl'>
+          <button onClick={() => navigate('/projects')} className="flex ml-4 sm:ml-20 items-center text-sm sm:text-md gap-2 sm:mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
+          <div className='flex items-center justify-between w-full px-4 sm:px-20 gap-4'>
+            <h1 className='text-xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-l from-blue-500/80 via-blue-400/80 to-sky-400'>Projects Status</h1>
           </div>
           <div className="flex flex-wrap gap-6 overflow-x-auto pb-6 w-full items-start justify-center">
             {Object.keys(columns).map((columnId) => (
-              <div key={columnId} className={`flex-shrink-0 w-80 bg-zinc-800 rounded-lg shadow-x-lg border-t-4 ${columnStyles[columnId].border}`}
+              <div key={columnId} className={`flex-shrink-0 w-80 bg-zinc-800 rounded-lg shadow-x-lg border-t-3 sm:border-t-4 ${columnStyles[columnId].border}`}
                 onDragOver={user?.role === 'admin' ? (e) => handleDragOver(e) : undefined}
                 onDrop={user?.role === 'admin' ? (e) => handleDrop(e, columnId) : undefined}
               >
-                <div className={`p-4 text-white font-bold text-xl rounded-t-md ${columnStyles[columnId].header}`}>
+                <div className={`p-2 sm:p-4 text-white font-bold text-lg sm:text-xl rounded-t-md ${columnStyles[columnId].header}`}>
                   {columns[columnId].name}
-                  <span className="ml-2 px-2 py-1 bg-zinc-800/50 bg-opacity-30 rounded-lg text-sm">{columns[columnId].items.length}</span>
+                  <span className="ml-2 px-1 sm:px-2 py-0.5 sm:py-1 bg-zinc-800/50 bg-opacity-30 rounded-lg text-xs sm:text-sm">{columns[columnId].items.length}</span>
                 </div>
-                <div className="p-3 min-h-64 ">
+                <div className="p-1 sm:p-3 min-h-64 ">
                   {columns[columnId].items.length === 0 ? (
                     <div className="text-center text-zinc-500 italic text-sm ">No Projects Here</div>
                   ) : (
                     columns[columnId].items.map((item) => (
-                      <div key={item.id} className={`px-4 py-2 mb-3 bg-zinc-700/20 hover:bg-zinc-700/50 text-white border border-zinc-500 shadow-md rounded-md flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
+                      <div key={item.id} className={`px-2 sm:px-4 py-1 sm:py-2 mb-1 sm:mb-3 bg-zinc-700/20 hover:bg-zinc-700/50 text-white border border-zinc-500 shadow-md rounded-md flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
                         draggable={user?.role === 'admin'}
                         onDragStart={user?.role === 'admin' ? () => handleDragStart(columnId, item) : undefined}>
                         <div className='flex flex-col justify-center w-full'>
                           <div className='flex items-center gap-2'>
-                            <img src={item.logo} className='h-8 w-8 ' onError={(e)=>e.target.src='./logo.jpg'}/>
-                            <div className="flex flex-col items-start justify-center text-sm w-full ">
-                              <span className='font-semibold text-lg text-blue-300'>{item.project_name}</span>
+                            <img src={item.logo} className='h-8 w-8' onError={(e)=>e.target.src='./logo.jpg'}/>
+                            <div className="flex flex-col items-start justify-center w-full ">
+                              <span className='font-semibold text-md sm:text-lg text-blue-300'>{item.project_name}</span>
                             </div>
                           </div>
                           <span className='text-sm text-zinc-400 px-1 line-clamp-2 truncate'>{item.description}</span>
                           
-                          <div className='mt-2 flex items-center w-full justify-between border-t border-zinc-500'>
-                            <Link to={`/projects/${item.id}`} className='text-xs px-3 mt-2 py-1 bg-transparent text-zinc-400 hover:text-blue-300 hover:bg-blue-500/40 rounded transition-colors text-center'>
+                          <div className='mt-2 sm:mt-4 flex items-center w-full justify-between border-t border-zinc-500'>
+                            <Link to={`/projects/${item.id}`} className='text-xs px-3 py-1 bg-transparent text-zinc-400 hover:text-blue-300 hover:bg-blue-500/40 rounded transition-colors text-center'>
                               Details
                             </Link>
-                            <span className='text-sm text-zinc-400 flex items-center gap-2 mt-2'><MdOutlineDateRange className="" /> {formatDateManually(item.due_date)}</span>
+                            <span className='text-xs sm:text-sm text-zinc-400 flex items-center gap-2 '><MdOutlineDateRange className="" /> {formatDateManually(item.due_date)}</span>
                           </div>
                         </div>
                       </div>
