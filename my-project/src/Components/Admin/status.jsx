@@ -76,8 +76,8 @@ const Status = () => {
     <div>
       <div className='p-2 sm:p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
         <div className='flex items-start flex-col gap-2 sm:gap-4 w-full max-w-6xl'>
-          <button onClick={() => navigate('/projects')} className="flex ml-4 sm:ml-20 items-center text-sm sm:text-md gap-2 sm:mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
-          <div className='flex items-center justify-between w-full px-4 sm:px-20 gap-4'>
+          <button onClick={() => navigate('/projects')} className="flex ml-4 pt-2  sm:ml-20 items-center text-sm sm:text-md gap-2 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
+          <div className='flex items-center justify-between w-full px-4 sm:px-20'>
             <h1 className='text-xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-l from-blue-500/80 via-blue-400/80 to-sky-400'>Projects Status</h1>
           </div>
           <div className="flex flex-wrap gap-6 overflow-x-auto pb-6 w-full items-start justify-center">
@@ -90,12 +90,12 @@ const Status = () => {
                   {columns[columnId].name}
                   <span className="ml-2 px-1 sm:px-2 py-0.5 sm:py-1 bg-zinc-800/50 bg-opacity-30 rounded-lg text-xs sm:text-sm">{columns[columnId].items.length}</span>
                 </div>
-                <div className="p-1 sm:p-3 min-h-64 ">
+                <div className="p-1 sm:p-3 min-h-64 border border-zinc-700 rounded-b-lg">
                   {columns[columnId].items.length === 0 ? (
                     <div className="text-center text-zinc-500 italic text-sm ">No Projects Here</div>
                   ) : (
                     columns[columnId].items.map((item) => (
-                      <div key={item.id} className={`px-2 sm:px-4 py-1 sm:py-2 mb-1 sm:mb-3 bg-zinc-700/20 hover:bg-zinc-700/50 text-white border border-zinc-500 shadow-md rounded-md flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
+                      <div key={item.id} className={`px-2 sm:px-4 py-1 sm:py-2 mb-1 sm:mb-3 bg-zinc-700/20 hover:bg-zinc-700/50 text-white border border-zinc-700 shadow-md rounded-md flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
                         draggable={user?.role === 'admin'}
                         onDragStart={user?.role === 'admin' ? () => handleDragStart(columnId, item) : undefined}>
                         <div className='flex flex-col justify-center w-full'>
@@ -107,7 +107,7 @@ const Status = () => {
                           </div>
                           <span className='text-sm text-zinc-400 px-1 line-clamp-2 truncate'>{item.description}</span>
                           
-                          <div className='mt-2 sm:mt-4 flex items-center w-full justify-between border-t border-zinc-500'>
+                          <div className='mt-2 sm:mt-4 flex items-center w-full justify-between border-t border-zinc-600'>
                             <Link to={`/projects/${item.id}`} className='text-xs px-3 py-1 bg-transparent text-zinc-400 hover:text-blue-300 hover:bg-blue-500/40 rounded transition-colors text-center'>
                               Details
                             </Link>

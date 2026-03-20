@@ -243,11 +243,10 @@ const Kanban = () => {
     <div>
       <div className='p-2 sm:p-6 mt-18 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex items-start justify-center'>
         <div className='flex items-start flex-col gap-2 sm:gap-4 w-full max-w-6xl mx-auto'>
-          <button onClick={() => navigate(`/projects/${projectId}`)} className="flex ml-4 sm:ml-20 items-center text-sm sm:text-md gap-2 sm:mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
           <div className='flex justify-between w-full px-2 sm:px-20 gap-4'>
-            <h1 className='text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-blue-200/80 to-blue-200/50'>{project?.project_name || "Loading..."}</h1>
+            <button onClick={() => navigate(`/projects/${projectId}`)} className="flex items-center text-sm sm:text-md gap-2 sm:mb-4 cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
 
-            <Popup onClose={() => { setnewFeature({ feature: "", desc: "", assign: "", due_date: "", status: "todo" }); setActiveColumn("todo"); }} trigger={<button className="bg-gradient-to-r from-green-600/50 to-green-400/80 text-white hover:text-zinc-900 px-3 sm:px-4 py-1 sm:py-2 rounded hover:from-green-300/70 hover:to-green-500 transition duration-200 cursor-pointer">+ New Feature</button>}
+            <Popup onClose={() => { setnewFeature({ feature: "", desc: "", assign: "", due_date: "", status: "todo" }); setActiveColumn("todo"); }} trigger={<button className="bg-gradient-to-r text-nowrap from-green-600/50 to-green-400/80 text-white hover:text-zinc-900 px-2 sm:px-4 py-1 sm:py-2 rounded hover:from-green-300/70 hover:to-green-500 transition duration-200 cursor-pointer">+ New Feature</button>}
               modal nested
             >
               {
@@ -391,6 +390,8 @@ const Kanban = () => {
               }
             </Popup>
           </div>
+          <h1 className='text-xl sm:ml-16 px-4 sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-blue-200/80 to-blue-200/50'>{project?.project_name || "Loading..."}</h1>
+
           {isFeaturesLoading ? (
             <div className="w-full flex justify-center py-20 text-zinc-400">
               Loading features...
@@ -401,27 +402,27 @@ const Kanban = () => {
                 {
                   close => viewFeatureData && (
                     <div className="h-screen w-screen flex items-center justify-center bg-zinc-900/80 fixed top-0 left-0 z-50 backdrop-blur-md">
-                      <div className="relative mb-8 mx-2 flex w-full sm:max-w-xl  shadow-lg rounded-lg bg-gradient-to-r from-zinc-800 to-yellow-600/10 border-t-4 border-green-600">
+                      <div className="mb-8 mx-2 flex w-full sm:max-w-xl shadow-lg rounded-lg bg-gradient-to-r from-zinc-800 to-yellow-600/10 border-t-4 border-green-600">
                         <div className="flex flex-col w-full ">
                           <div className="flex flex-col w-full overflow-hidden rounded-t-md bg-transparent px-1 pt-2 pb-4 border border-zinc-700/30 hover:border-zinc-700">
-                            <div className="flex justify-between items-center mb-3 sm:mb-4">
-                              <div className="text-lg sm:text-xl font-bold text-white px-3 flex items-center gap-2">
+                            <div className="flex justify-between items-start mb-3 sm:mb-4">
+                              <div className="text-lg sm:text-xl font-bold text-white px-3 flex items-start gap-2">
                                 <MdOutlineEdit className='text-gray-400 h-7 w-7 border border-zinc-700/90 rounded p-0.5' />
                                 <span className='flex gap-2 items-center'>{viewFeatureData.feature}
                                   <span className='text-gray-500 text-xs sm:text-sm'>#{viewFeatureData.id}</span>
                                 </span>
                               </div>
-                              <div className='text-gray-500 text-xs sm:text-sm'>Create at {viewFeatureData?.created_at?.split("T")[0]}</div>
+                              <div className='text-gray-500 text-xs sm:text-sm flex gap-1 flex-col sm:flex-row'>Create at <span>{viewFeatureData?.created_at?.split("T")[0]}</span></div>
                             </div>
 
-                            <div className='flex gap-3 items-center justify-between bg-transparent'>
-                              <div>
+                            <div className='flex gap-3 items-center bg-transparent'>
+                              <div className='flex flex-col w-full'>
                                 <label className='px-2 text-zinc-400 text-sm ' htmlFor="Due Date">Due Date </label>
                                 <div
-                                  className='flex-grow scheme-light-dark px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/40'
+                                  className='flex-grow flex justify-center scheme-light-dark px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/40'
                                 >{viewFeatureData.due_date}</div>
                               </div>
-                              <div>
+                              <div className='flex flex-col w-full'>
                                 <label className='px-2 text-zinc-400 text-sm'>Status</label>
                                 <div value={viewFeatureData.status}
                                   className="flex items-center justify-center rounded-lg px-1 py-1 text-white bg-zinc-800/40 border border-zinc-700/30 hover:border-zinc-700"
@@ -429,9 +430,9 @@ const Kanban = () => {
                                   {columns[viewFeatureData.status]?.name || viewFeatureData.status}
                                 </div>
                               </div>
-                              <div>
+                              <div className='flex flex-col w-full'>
                                 <label className='px-2 text-zinc-400 text-sm' htmlFor="Assign">Assign To </label>
-                                <div className='flex-grow px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/20'>
+                                <div className='flex-grow flex justify-center px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/20'>
                                   {viewFeatureData?.assign || "N/A"}
                                 </div>
                               </div>
@@ -441,7 +442,16 @@ const Kanban = () => {
                               className="flex-grow px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/40"
                             >{viewFeatureData.desc || ""}</div>
                           </div>
-
+                          {user?.role === 'admin' && (
+                            <div className='flex items-center justify-evenly'>
+                              <button onClick={() => {setEditFeatureData(viewFeatureData);setViewFeatureData(null); close();}} className='text-zinc-400 hover:text-blue-400 border-x border-zinc-700/50 transition-colors duration-200 w-full flex items-center justify-center hover:bg-zinc-600'>
+                                <span className='text-md cursor-pointer flex items-center gap-2'><FaRegEdit className='size-3.5' />Edit</span>
+                              </button>
+                              <button onClick={() => { setDeleteFeatureId(viewFeatureData.id);setViewFeatureData(null); setOpen(true); }} className='text-zinc-400 hover:text-red-400 border-x border-zinc-700/50 transition-colors duration-200 w-full flex items-center justify-center hover:bg-zinc-600'>
+                                <span className='text-md cursor-pointer flex items-center gap-2'><IoTrashOutline className='size-4' />Delete</span>
+                              </button>
+                            </div>
+                          )}
                           <button onClick={close} className='border-t-2 border-black bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium hover:from-green-500 hover:to-emerald-500 transition-all duration-200 cursor-pointer py-1 disabled:cursor-not-allowed disabled:opacity-60'>Close</button>
                         </div>
                       </div>
@@ -450,15 +460,15 @@ const Kanban = () => {
                 }
               </Popup>
               {Object.keys(columns).map((columnId) => (
-                <div key={columnId} className={`flex-shrink-0 w-80 rounded-lg shadow-x-lg border-t-4 ${columnStyles[columnId].border}`}
+                <div key={columnId} className={`flex-shrink-0 w-80 rounded-lg shadow-x-lg border-t-3 sm:border-t-4 ${columnStyles[columnId].border}`}
                   onDragOver={user?.role === 'admin' ? (e) => handleDragOver(e, columnId) : undefined}
                   onDrop={user?.role === 'admin' ? (e) => handleDrop(e, columnId) : undefined}
                 >
-                  <div className={`p-4 text-white font-bold text-xl rounded-t-md ${columnStyles[columnId].header}`}>
+                  <div className={`p-1 px-3 sm:p-4 text-white font-medium text-lg sm:text-xl rounded-t-md ${columnStyles[columnId].header}`}>
                     {columns[columnId].name}
-                    <span className="ml-2 px-2 py-1 bg-zinc-800 bg-opacity-30 rounded-full text-sm">{columns[columnId].items.length}</span>
+                    <span className="ml-2 px-1 sm:px-2 py-0.5 sm:py-1 bg-zinc-800 bg-opacity-30 rounded-full font-normal text-xs sm:text-sm">{columns[columnId].items.length}</span>
                   </div>
-                  <div className="p-3 min-h-64 border border-zinc-700 rounded-lg">
+                  <div className="p-1 sm:p-3 min-h-64 border border-zinc-700 rounded-b-lg">
                     {columns[columnId].items.length === 0 ? (
                       <div className="text-center text-zinc-500 italic text-sm ">Add Features Here</div>
                     ) : (
@@ -468,11 +478,11 @@ const Kanban = () => {
                           draggable={user?.role === 'admin'}
                           onDragStart={user?.role === 'admin' ? () => handleDragStart(columnId, item) : undefined}
                           onDoubleClick={() => setViewFeatureData(item)}
-                          className={`p-4 mb-3 bg-zinc-700/20 hover:bg-zinc-700/50 text-white shadow-md rounded-lg border border-zinc-700 flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
+                          className={`px-2 py-1 sm:p-4 mb-1.5 sm:mb-3 bg-zinc-700/20 hover:bg-zinc-700/50 text-white shadow-md rounded-lg border border-zinc-700 flex items-center justify-between transform transition-all duration-200 hover:scale-105 hover:shadow-lg ${user?.role === 'admin' ? 'cursor-move' : 'cursor-default'}`}
                         >
                           <div className='flex flex-col justify-center w-full'>
-                            <div className="flex justify-between">
-                              <span className='mr-2'>{item.feature}</span>
+                            <div className="flex justify-between items-center">
+                              <span className='mr-2 text-sm sm:text-md'>{item.feature}</span>
                               {user?.role === 'admin' && (
                                 <div className='flex items-center justify-center '>
                                   <button onClick={() => setEditFeatureData(item)} className='text-zinc-400 hover:text-blue-400 transition-colors duration-200 w-6 h-6 flex items-center justify-center rounded-full hover:bg-zinc-600'>
@@ -483,10 +493,10 @@ const Kanban = () => {
                                 </div>
                               )}
                             </div>
-                            <span className='text-sm text-zinc-400 text-wrap line-clamp-2'>{item.desc}</span>
-                            <div className="flex gap-5 text-sm justify-between border-t border-zinc-500 mt-2 pt-1">
+                            <span className='text-xs sm:text-sm text-zinc-400 text-wrap line-clamp-2'>{item.desc}</span>
+                            <div className="flex gap-5 text-xs sm:text-sm justify-between border-t border-zinc-600 mt-2 pt-1">
                               <span className='text-sm text-zinc-400'>{item.assign === user.email ? user.name : item.assign.split("@")[0]}</span>
-                              <span className='text-sm text-zinc-400'>{formatDateManually(item.due_date)}</span>
+                              <span className='text-xs sm:text-sm text-zinc-400'>{formatDateManually(item.due_date)}</span>
                             </div>
                           </div>
                         </div>

@@ -30,7 +30,7 @@ const Projects = () => {
   return (
     <div className="p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
       <div className="max-w-320 mx-auto">
-        <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 mb-4 text-sm sm:text-base cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Dashboard</button>
+        <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 mb-4 text-sm sm:text-md cursor-pointer text-zinc-400 hover:text-white"><IoArrowBack className="text-xl" />Back to Dashboard</button>
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">Projects</h1>

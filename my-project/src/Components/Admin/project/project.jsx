@@ -177,7 +177,7 @@ const Project = () => {
 
 
   return (
-    <div className="p-2 sm:p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
+    <div className="p-4 sm:p-6 mt-18 bg-gradient-to-b from-zinc-900 to-zinc-600 min-h-screen text-white">
       <div className="max-w-320 mx-auto">
         {project && (
           <div>
