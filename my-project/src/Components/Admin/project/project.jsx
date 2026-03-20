@@ -181,7 +181,7 @@ const Project = () => {
       <div className="max-w-320 mx-auto">
         {project && (
           <div>
-            <button onClick={() => navigate('/projects')} className="flex items-center gap-2 mb-2 sm:mb-4 cursor-pointer text-zinc-400  text-sm sm:text-md hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
+            <button onClick={() => navigate('/projects')} className="flex items-center gap-2 mb-2 sm:mb-4 cursor-pointer text-zinc-400 text-sm sm:text-md hover:text-white"><IoArrowBack className="text-xl" />Back to Projects</button>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 w-full justify-between">
               <div className="flex items-center gap-2 sm:gap-4">
                 <div className="size-8 sm:size-10 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
@@ -201,9 +201,9 @@ const Project = () => {
               </div>
             </div>
             <p className="text-zinc-300 mt-2">{project.description}</p>
-            <div className="flex mt-8 items-start gap-6">
-              <div className="p-6 bg-zinc-800 rounded-lg shadow-lg min-w-[40vh] border-2 border-zinc-700">
-                <div className="text-gray-500">PROJECT DETAILS</div>
+            <div className="flex flex-col sm:flex-row mt-8 items-start gap-6">
+              <div className="p-4 sm:p-6 bg-zinc-800 rounded-lg shadow-lg w-full sm:w-auto sm:min-w-[40vh] border-2 border-zinc-700">
+                <div className="text-lg font-medium text-gray-500">PROJECT DETAILS</div>
                 <div className="text-zinc-400 mt-4 flex flex-col">
                   <span className="text-sm">Due Date</span>
                   <div className="flex items-center gap-2 mt-1">
@@ -225,9 +225,9 @@ const Project = () => {
                 </div>
               </div>
 
-              <div className="p-6 bg-zinc-800 rounded-lg shadow-lg border-2 border-zinc-700 w-full">
-                <div className="flex justify-between gap-4">
-                  <h4 className="text-xl font-bold text-white mb-4">Project Gallery</h4>
+              <div className="p-4 sm:p-6 bg-zinc-800 rounded-lg shadow-lg border-2 border-zinc-700 w-full">
+                <div className="flex flex-col sm:flex-row justify-between sm:gap-4">
+                  <h4 className="text-lg sm:text-xl font-medium text-gray-500 mb-4">PROJECT GALLERY</h4>
                   {user?.role === "admin" ? (
                     <div className="mb-4">
                       <input
@@ -246,7 +246,7 @@ const Project = () => {
                 </div>
 
                 {displayImages.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {displayImages.map((imgUrl, imageId) => (
                       <div key={imageId} className="group relative aspect-video rounded-xl overflow-hidden bg-zinc-800/50 border border-zinc-700/50 shadow-sm transition-all hover:border-zinc-500/70 hover:shadow-md">
                         <Popup

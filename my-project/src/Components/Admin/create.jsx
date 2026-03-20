@@ -91,7 +91,7 @@ const Create = () => {
 
   return (
     <div>
-      <div className="px-2 py-16 sm:pt-16 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex flex-col items-center sm:justify-center" >
+      <div className="px-2 py-16 w-full min-h-screen bg-gradient-to-b from-zinc-900 to-zinc-600 flex flex-col items-center sm:justify-center" >
         <div className='sm:bg-zinc-900/50 w-full sm:w-auto py-4 px-0.5 sm:py-8 sm:px-16 flex flex-col items-center justify-center'>
           <h2 className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-500 to-rose-400">Create New Project</h2>
           <span className='mb-4 sm:mb-8 text-xs sm:text-sm text-zinc-400'>Set up a workspace for your next big idea.</span>
@@ -99,7 +99,7 @@ const Create = () => {
             <form onSubmit={handleSubmit} className=" flex flex-col gap-4 ">
               <div className="flex flex-col w-full ">
                 <label className="text-sm sm:text-md text-zinc-400 ">Project Name</label>
-                <input required name='name' type="text" placeholder="Enter project name" className="mx-1 text-sm sm:text-md bg-zinc-800/30 text-white py-1 px-2 sm:p-2 sm:px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40" />
+                <input required name='name' type="text" placeholder="Enter project name" className="mx-1  bg-zinc-800/30 text-white text-sm sm:text-md py-1 px-2 sm:p-2 sm:px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40" />
               </div>
               <div className="flex flex-col w-full ">
                 <label className='flex gap-2 text-sm sm:text-md items-center justify-between text-zinc-400'>

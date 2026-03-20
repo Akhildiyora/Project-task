@@ -54,7 +54,7 @@ const Dashboard = () => {
                   <Link to={`/projects/${project.id}`} key={project.id} className='flex items-center w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl'>
                     <div className='flex flex-col p-2 w-full'>
                       <span className='font-semibold sm:font-medium text-base sm:text-lg text-white'>{project.project_name}</span>
-                      <span className='text-xs sm:text-sm text-gray-400'>{project.description}</span>
+                      <span className='text-xs sm:text-sm text-gray-400 line-clamp-2'>{project.description}</span>
                     </div>
                     <div className='p-2 px-4 font-light'><FaAngleRight />
                     </div>
