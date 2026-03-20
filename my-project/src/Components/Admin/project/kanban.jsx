@@ -444,10 +444,10 @@ const Kanban = () => {
                           </div>
                           {user?.role === 'admin' && (
                             <div className='flex items-center justify-evenly'>
-                              <button onClick={() => {setEditFeatureData(viewFeatureData);setViewFeatureData(null); close();}} className='text-zinc-400 hover:text-blue-400 border-x border-zinc-700/50 transition-colors duration-200 w-full flex items-center justify-center hover:bg-zinc-600'>
+                              <button onClick={(e) => {e.preventDefault(); setEditFeatureData(viewFeatureData);setViewFeatureData(null); close();}} className='text-zinc-400 hover:text-blue-400 border-x border-zinc-700/50 transition-colors duration-200 w-full flex items-center justify-center hover:bg-zinc-600'>
                                 <span className='text-md cursor-pointer flex items-center gap-2'><FaRegEdit className='size-3.5' />Edit</span>
                               </button>
-                              <button onClick={() => { setDeleteFeatureId(viewFeatureData.id);setViewFeatureData(null); setOpen(true); }} className='text-zinc-400 hover:text-red-400 border-x border-zinc-700/50 transition-colors duration-200 w-full flex items-center justify-center hover:bg-zinc-600'>
+                              <button onClick={(e) => { e.preventDefault(); setDeleteFeatureId(viewFeatureData.id);setViewFeatureData(null); setOpen(true); }} className='text-zinc-400 hover:text-red-400 border-x border-zinc-700/50 transition-colors duration-200 w-full flex items-center justify-center hover:bg-zinc-600'>
                                 <span className='text-md cursor-pointer flex items-center gap-2'><IoTrashOutline className='size-4' />Delete</span>
                               </button>
                             </div>
