@@ -468,7 +468,7 @@ const Kanban = () => {
                     {columns[columnId].name}
                     <span className="ml-2 px-1 sm:px-2 py-0.5 sm:py-1 bg-zinc-800 bg-opacity-30 rounded-full font-normal text-xs sm:text-sm">{columns[columnId].items.length}</span>
                   </div>
-                  <div className="p-1 sm:p-3 min-h-64 border border-zinc-700 rounded-b-lg">
+                  <div className="p-1 sm:p-3 min-h-64 border border-zinc-700 rounded-b-lg overflow-y-auto max-h-[70vh] ">
                     {columns[columnId].items.length === 0 ? (
                       <div className="text-center text-zinc-500 italic text-sm ">Add Features Here</div>
                     ) : (
