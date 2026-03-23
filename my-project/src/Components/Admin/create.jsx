@@ -26,7 +26,7 @@ const Create = () => {
     }
 
     const formData = {
-      name: e.target.name.value,
+      project_name: e.target.name.value,
       due_date: e.target.due_date.value,
       description: e.target.description.value,
       members: member,

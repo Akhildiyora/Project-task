@@ -32,7 +32,7 @@ const loginSchema = z.object({
 });
 const ProjectSchema = z.object({
   images: z.array(z.string().url()).optional(),
-  project_name: z.string().min(1).optional(),
+  project_name: z.string().min(1),
   status: z.string().optional(),
   due_date: z.string().optional(),
   description: z.string().optional(),
