@@ -269,7 +269,7 @@ const Kanban = () => {
                           <div className='flex flex-col sm:flex-row mt-3 sm:mt-0 gap-3 items-start sm:items-center justify-between bg-transparent'>
                             <div>
                               <label className='px-2 text-zinc-400 text-sm' htmlFor="Due Date">Due Date</label>
-                              <input required type="date" value={newFeature.due_date}
+                              <input type="date" min={new Date().toISOString().split("T")[0]} value={newFeature.due_date}
                                 className='text-sm sm:text-md flex-grow scheme-light-dark px-2 sm:px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/20'
                                 onChange={(e) => setnewFeature({ ...newFeature, due_date: e.target.value })}
                               />
@@ -346,7 +346,7 @@ const Kanban = () => {
                           <div className='flex flex-col sm:flex-row mt-3 sm:mt-0 gap-3 item-start sm:items-center justify-between bg-transparent'>
                             <div>
                               <label className='px-2 text-zinc-400 text-sm ' htmlFor="Due Date">Due Date </label>
-                              <input required type="date" value={editFeatureData.due_date || ""}
+                              <input type="date" min={new Date().toISOString().split("T")[0]} value={editFeatureData.due_date || ""}
                                 className='text-sm sm:text-md flex-grow scheme-light-dark px-2 sm:px-3 py-1 text-zinc-100 border border-zinc-700/30 hover:border-zinc-700 rounded-lg bg-zinc-800/20'
                                 onChange={(e) => setEditFeatureData({ ...editFeatureData, due_date: e.target.value })}
                               />

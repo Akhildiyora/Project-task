@@ -157,7 +157,7 @@ const Create = () => {
                             </div>
                             <div>
                                 <label className="text-sm sm:text-md text-zinc-400 mb-2">Due Date</label>
-                                <input required name='due_date' defaultValue={project?.due_date} type="date" className="mx-1 scheme-light-dark bg-zinc-800/30 text-white text-sm sm:text-md py-1 px-2 sm:p-2 sm:px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40 w-full" />
+                                <input required name='due_date' defaultValue={project?.due_date} min={new Date().toISOString().split("T")[0]} type="date" className="mx-1 scheme-light-dark bg-zinc-800/30 text-white text-sm sm:text-md py-1 px-2 sm:p-2 sm:px-4 rounded-lg border border-zinc-700/30 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-blue-500/40 w-full" />
                             </div>
                             <div>
                                 <label className="text-sm sm:text-md text-zinc-400 mb-2">Description</label>

@@ -345,10 +345,14 @@ app.get("/users", authMiddleware, async (c) => {
 
 app.get("/projects", authMiddleware, async (c) => {
   const user = c.get("jwtPayload");
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    .or(`user_id.eq.${user.sub},members.cs.{${user.email.toLowerCase()}}`);
+
+  let query = supabase.from("projects").select("*");
+
+  if(user.role != "admin") {
+    query = query.or(`user_id.eq.${user.sub},members.cs.{${user.email.toLowerCase()}}`);
+  }
+
+  const { data, error } = await query
 
   if (error) {
     console.error("PROJECT FETCH ERROR:", error);

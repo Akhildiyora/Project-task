@@ -15,7 +15,7 @@ const Projects = () => {
   const { user } = useUserDataContext();
   const { projects, dataLoading } = useDataContext();
   const sortedProjects = [...projects].sort(
-    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    (a, b) => new Date(a.due_date) - new Date(b.due_date)
   );
   const CopyUrl = async (id) => {
     const currentUrl = `${FAPI}/public/projects/${id}/features`;
